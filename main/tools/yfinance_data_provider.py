@@ -7,8 +7,8 @@ import pandas as pd
 import yfinance as yf
 
 from main.tools.constants import (
-    YfinanceCandleSize,
     YfinanceGroupBy,
+    YfinanceInterval,
     YfinancePeriod,
 )
 
@@ -20,7 +20,7 @@ class YfinanceDataProvider:
     def get_data(
         assets: Union[str, List[str]],
         period: Union[YfinancePeriod, str],
-        candle_size: Union[YfinanceCandleSize, str],
+        interval: Union[YfinanceInterval, str],
         group_by: Union[YfinanceGroupBy, str] = YfinanceGroupBy.COLUMN,
     ) -> pd.DataFrame:
         """Get historical prices data from yfinance.
@@ -29,7 +29,7 @@ class YfinanceDataProvider:
             assets (Union[str, List[str]]): The code for the asset(s) to
                 retrieve historical prices for.
             period (Union[YfinancePeriod, str]): The period of the time series.
-            candle_size (Union[YfinanceCandleSize, str]): The size of the
+            interval (Union[YfinanceInterval, str]): The size of the
                 interval between each data point.
             group_by (Union[YfinanceGroupBy, str]): Group values in df by
                 'column' or 'ticker' if getting data for multiples tickers.
@@ -42,8 +42,8 @@ class YfinanceDataProvider:
 
         if isinstance(period, YfinancePeriod):
             period = period.value
-        if isinstance(candle_size, YfinanceCandleSize):
-            candle_size = candle_size.value
+        if isinstance(interval, YfinanceInterval):
+            interval = interval.value
         if isinstance(group_by, YfinanceGroupBy):
             group_by = group_by.value
 
@@ -52,7 +52,7 @@ class YfinanceDataProvider:
         data = yf.download(
             tickers=assets,
             period=period,
-            interval=candle_size,
+            interval=interval,
             group_by=group_by,
         )
 

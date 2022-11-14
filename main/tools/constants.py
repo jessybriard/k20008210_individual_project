@@ -17,7 +17,7 @@ class YfinancePeriod(Enum):
     MAX = "max"
 
 
-class YfinanceCandleSize(Enum):
+class YfinanceInterval(Enum):
     """Interval for yfinance.download()."""
 
     ONE_MINUTE = "1m"
