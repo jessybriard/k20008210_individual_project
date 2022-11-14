@@ -33,3 +33,10 @@ class YfinanceCandleSize(Enum):
     ONE_WEEK = "1wk"
     ONE_MONTH = "1mo"
     THREE_MONTHS = "3mo"
+
+
+class YfinanceGroupBy(Enum):
+    """Formatting options for yfinance.download() with multiple assets."""
+
+    COLUMN = "column"
+    TICKER = "ticker"
