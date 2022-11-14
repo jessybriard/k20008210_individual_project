@@ -1,5 +1,5 @@
 """Class to get financial data from Yahoo Finance, using the yfinance Python
-API. """
+API."""
 
 from typing import List, Union
 
@@ -89,5 +89,5 @@ class YfinanceDataProvider:
             ticker = tickers
             if isinstance(tickers, list):
                 ticker = tickers[0]
-            close_data = pd.DataFrame({ticker: close_data})
+            close_data = pd.DataFrame(data={ticker: close_data})
         return close_data
