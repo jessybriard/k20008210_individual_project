@@ -6,7 +6,7 @@ from typing import List, Union
 import pandas as pd
 import yfinance as yf
 
-from main.tools.constants import (
+from src.tools.constants import (
     YfinanceGroupBy,
     YfinanceInterval,
     YfinancePeriod,
@@ -18,7 +18,7 @@ class YfinanceDataProvider:
 
     @staticmethod
     def get_data(
-        assets: Union[str, List[str]],
+        tickers: Union[str, List[str]],
         period: Union[YfinancePeriod, str],
         interval: Union[YfinanceInterval, str],
         group_by: Union[YfinanceGroupBy, str] = YfinanceGroupBy.COLUMN,
@@ -26,7 +26,7 @@ class YfinanceDataProvider:
         """Get historical prices data from yfinance.
 
         Args:
-            assets (Union[str, List[str]]): The code for the asset(s) to
+            tickers (Union[str, List[str]]): The ticker for the asset(s) to
                 retrieve historical prices for.
             period (Union[YfinancePeriod, str]): The period of the time series.
             interval (Union[YfinanceInterval, str]): The size of the
@@ -50,7 +50,7 @@ class YfinanceDataProvider:
         # An invalid request to yf.download() will return a pandas DataFrame
         # with named columns but empty values (no rows).
         data = yf.download(
-            tickers=assets,
+            tickers=tickers,
             period=period,
             interval=interval,
             group_by=group_by,
