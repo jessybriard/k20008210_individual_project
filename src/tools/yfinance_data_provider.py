@@ -23,7 +23,7 @@ class YfinanceDataProvider:
         interval: Union[YfinanceInterval, str],
         group_by: Union[YfinanceGroupBy, str] = YfinanceGroupBy.COLUMN,
     ) -> pd.DataFrame:
-        """Get historical prices data from yfinance.
+        """Get historical prices data from Yahoo Finance.
 
         Args:
             tickers (Union[str, List[str]]): The ticker for the asset(s) to
@@ -57,3 +57,28 @@ class YfinanceDataProvider:
         )
 
         return data
+
+    @staticmethod
+    def get_daily_close_prices(
+        tickers: Union[str, List[str]],
+        period: Union[YfinancePeriod, str] = YfinancePeriod.MAX
+    ) -> pd.DataFrame:
+        """Get historical daily Close prices for tickers, from Yahoo Finance.
+
+        Args:
+            tickers (Union[str, List[str]]): The ticker for the asset(s) to
+                retrieve daily historical Close prices for.
+            period (Union[YfinancePeriod, str]): The period of the time series.
+
+        Returns:
+            close_data (pd.DataFrame): The historical Close prices time series.
+
+        """
+
+        raw_data = YfinanceDataProvider.get_data(
+            tickers=tickers,
+            period=period,
+            interval=YfinanceInterval.ONE_DAY,
+            group_by=YfinanceGroupBy.COLUMN
+        )
+        return raw_data["Close"]
