@@ -24,25 +24,26 @@ class TestYfinanceDataProvider(TestCase):
     def mock_download_side_effect(self, **kwargs):
         self.parameters = kwargs
         tickers = kwargs["tickers"]
-        # Multiple assets request
+        # Multiple tickers request
         if isinstance(tickers, list) and len(tickers) > 1:
             with open(
                 f"{self.TEST_DATA_DIR}"
-                f"/yf_download_multiple_assets_output.pickle",
+                f"/yf_download_multiple_tickers_output.pickle",
                 "rb",
             ) as file:
                 self.yf_download_output = pickle.load(file)
-        # Single asset request
+        # Single ticker request
         else:
             with open(
-                f"{self.TEST_DATA_DIR}/yf_download_single_asset_output.pickle",
+                f"{self.TEST_DATA_DIR}"
+                f"/yf_download_single_ticker_output.pickle",
                 "rb",
             ) as file:
                 self.yf_download_output = pickle.load(file)
         return self.yf_download_output
 
     @patch("yfinance.download")
-    def test_get_data_single_asset_str(self, mock_download_method):
+    def test_get_data_single_ticker_str(self, mock_download_method):
 
         # Arrange
         mock_download_method.side_effect = self.mock_download_side_effect
@@ -70,7 +71,7 @@ class TestYfinanceDataProvider(TestCase):
         self.assertTrue(self.yf_download_output.equals(data))
 
     @patch("yfinance.download")
-    def test_get_data_single_asset_list(self, mock_download_method):
+    def test_get_data_single_ticker_list(self, mock_download_method):
 
         # Arrange
         mock_download_method.side_effect = self.mock_download_side_effect
@@ -98,7 +99,7 @@ class TestYfinanceDataProvider(TestCase):
         self.assertTrue(self.yf_download_output.equals(data))
 
     @patch("yfinance.download")
-    def test_get_data_multiple_assets_list(self, mock_download_method):
+    def test_get_data_multiple_tickers_list(self, mock_download_method):
 
         # Arrange
         mock_download_method.side_effect = self.mock_download_side_effect
@@ -124,6 +125,50 @@ class TestYfinanceDataProvider(TestCase):
         }
         self.assertEqual(expected_parameters, self.parameters)
         self.assertTrue(self.yf_download_output.equals(data))
+
+    @patch("yfinance.download")
+    def test_get_data_tickers_empty_list(self, mock_download_method):
+
+        # Arrange
+        mock_download_method.side_effect = self.mock_download_side_effect
+        tickers = []
+        period = "1wk"
+        interval = "1d"
+        group_by = "column"
+
+        # Act / Assert
+        with self.assertRaises(ValueError) as e:
+            YfinanceDataProvider.get_data(
+                tickers=tickers,
+                period=period,
+                interval=interval,
+                group_by=group_by,
+            )
+        self.assertEqual(
+            str(e.exception), "Parameter 'tickers' cannot be empty."
+        )
+
+    @patch("yfinance.download")
+    def test_get_data_tickers_empty_str(self, mock_download_method):
+
+        # Arrange
+        mock_download_method.side_effect = self.mock_download_side_effect
+        tickers = ""
+        period = "1wk"
+        interval = "1d"
+        group_by = "column"
+
+        # Act / Assert
+        with self.assertRaises(ValueError) as e:
+            YfinanceDataProvider.get_data(
+                tickers=tickers,
+                period=period,
+                interval=interval,
+                group_by=group_by,
+            )
+        self.assertEqual(
+            str(e.exception), "Parameter 'tickers' cannot be empty."
+        )
 
     @patch("yfinance.download")
     def test_get_data_period_enum(self, mock_download_method):

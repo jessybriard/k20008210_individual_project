@@ -40,6 +40,9 @@ class YfinanceDataProvider:
 
         """
 
+        if not tickers:
+            raise ValueError("Parameter 'tickers' cannot be empty.")
+
         if isinstance(period, YfinancePeriod):
             period = period.value
         if isinstance(interval, YfinanceInterval):
@@ -61,7 +64,7 @@ class YfinanceDataProvider:
     @staticmethod
     def get_daily_close_prices(
         tickers: Union[str, List[str]],
-        period: Union[YfinancePeriod, str] = YfinancePeriod.MAX
+        period: Union[YfinancePeriod, str] = YfinancePeriod.MAX,
     ) -> pd.DataFrame:
         """Get historical daily Close prices for tickers, from Yahoo Finance.
 
@@ -79,6 +82,12 @@ class YfinanceDataProvider:
             tickers=tickers,
             period=period,
             interval=YfinanceInterval.ONE_DAY,
-            group_by=YfinanceGroupBy.COLUMN
+            group_by=YfinanceGroupBy.COLUMN,
         )
-        return raw_data["Close"]
+        close_data = raw_data["Close"]
+        if isinstance(close_data, pd.Series):
+            ticker = tickers
+            if isinstance(tickers, list):
+                ticker = tickers[0]
+            close_data = pd.DataFrame({ticker: close_data})
+        return close_data
