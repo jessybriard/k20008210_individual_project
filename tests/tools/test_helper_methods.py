@@ -93,3 +93,20 @@ class TestHelperMethods(TestCase):
             expected_returns_series.index, name="Date"
         )
         self.assertTrue(expected_returns_series.equals(returns_series))
+
+    def test_extract_returns_from_dataframe_empty_data(self):
+
+        # Arrange
+        data = pd.DataFrame(columns=["Date", "Open", "Close"])
+        data = data.set_index("Date")
+        data.index = pd.DatetimeIndex(data.index)
+
+        # Act
+        returns_series = extract_returns_from_dataframe(data=data)
+
+        # Assert
+        expected_returns_series = pd.Series(dtype=object)
+        expected_returns_series.index = pd.DatetimeIndex(
+            expected_returns_series.index, name="Date"
+        )
+        self.assertTrue(expected_returns_series.equals(returns_series))
