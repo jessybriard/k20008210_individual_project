@@ -11,6 +11,7 @@ from src.tools.constants import (
     YfinanceInterval,
     YfinancePeriod,
 )
+from src.tools.helper_methods import extract_returns_from_dataframe
 
 
 class YfinanceDataProvider:
@@ -91,3 +92,48 @@ class YfinanceDataProvider:
                 ticker = tickers[0]
             close_data = pd.DataFrame(data={ticker: close_data})
         return close_data
+
+    @staticmethod
+    def get_daily_returns(
+        tickers: Union[str, List[str]],
+        period: Union[YfinancePeriod, str] = YfinancePeriod.MAX,
+    ) -> pd.DataFrame:
+        """Get historical daily Open and Close prices for tickers, from Yahoo
+        Finance, and calculate daily returns.
+
+        Args:
+            tickers (Union[str, List[str]]): The ticker for the asset(s) to
+                retrieve daily historical Open and Close prices for.
+            period (Union[YfinancePeriod, str]): The period of the time series.
+
+        Returns:
+            returns_data (pd.DataFrame): The calculated daily returns time
+                series.
+
+        """
+
+        data = YfinanceDataProvider.get_data(
+            tickers=tickers,
+            period=period,
+            interval=YfinanceInterval.ONE_DAY,
+            group_by=YfinanceGroupBy.TICKER,
+        )
+
+        returns_data = pd.DataFrame()
+
+        if isinstance(tickers, list) and len(tickers) > 1:
+            for ticker in tickers:
+                ticker_returns_data = extract_returns_from_dataframe(
+                    data=data[ticker]
+                )
+                returns_data = pd.concat(
+                    [
+                        returns_data,
+                        pd.DataFrame(data={ticker: ticker_returns_data}),
+                    ],
+                    ignore_index=False,
+                    axis=1,
+                )
+        else:
+            returns_data = extract_returns_from_dataframe(data=data)
+        return returns_data
