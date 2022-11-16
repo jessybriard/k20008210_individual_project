@@ -119,9 +119,8 @@ class YfinanceDataProvider:
             group_by=YfinanceGroupBy.TICKER,
         )
 
-        returns_data = pd.DataFrame()
-
         if isinstance(tickers, list) and len(tickers) > 1:
+            returns_data = pd.DataFrame()
             for ticker in tickers:
                 ticker_returns_data = extract_returns_from_dataframe(
                     data=data[ticker]
@@ -135,5 +134,9 @@ class YfinanceDataProvider:
                     axis=1,
                 )
         else:
-            returns_data = extract_returns_from_dataframe(data=data)
+            if isinstance(tickers, list):
+                tickers = tickers[0]
+            return pd.DataFrame(
+                data={tickers: extract_returns_from_dataframe(data=data)}
+            )
         return returns_data

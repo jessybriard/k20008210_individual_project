@@ -28,20 +28,27 @@ class TestYfinanceDataProvider(TestCase):
         tickers = kwargs["tickers"]
         # Multiple tickers request
         if isinstance(tickers, list) and len(tickers) > 1:
-            with open(
-                f"{self.TEST_DATA_DIR}"
-                f"/yf_download_multiple_tickers_output.pickle",
-                "rb",
-            ) as file:
-                self.yf_download_output = pickle.load(file)
+            if (
+                "group_by" in kwargs.keys()
+                and kwargs["group_by"] == YfinanceGroupBy.TICKER
+            ):
+                output_pickled_file_name = (
+                    "yf_download_group_by_ticker_output.pickle"
+                )
+            else:
+                output_pickled_file_name = (
+                    "yf_download_multiple_tickers_output.pickle"
+                )
         # Single ticker request
         else:
-            with open(
-                f"{self.TEST_DATA_DIR}"
-                f"/yf_download_single_ticker_output.pickle",
-                "rb",
-            ) as file:
-                self.yf_download_output = pickle.load(file)
+            output_pickled_file_name = (
+                "yf_download_single_ticker_output.pickle"
+            )
+        with open(
+            f"{self.TEST_DATA_DIR}/{output_pickled_file_name}",
+            "rb",
+        ) as file:
+            self.yf_download_output = pickle.load(file)
         return self.yf_download_output
 
     @patch("yfinance.download")
@@ -449,3 +456,279 @@ class TestYfinanceDataProvider(TestCase):
         self.assertEqual(expected_parameters, self.parameters)
         expected_close_data = self.yf_download_output["Close"]
         self.assertTrue(expected_close_data.equals(close_data))
+
+    @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
+    def test_get_daily_returns_single_ticker_str(self, mock_get_data_method):
+
+        # Arrange
+        mock_get_data_method.side_effect = self.mock_download_side_effect
+        tickers = "CL=F"
+        period = "1wk"
+
+        # Act
+        returns_data = YfinanceDataProvider.get_daily_returns(
+            tickers=tickers, period=period
+        )
+
+        # Assert
+        expected_parameters = {
+            "tickers": "CL=F",
+            "period": "1wk",
+            "interval": YfinanceInterval.ONE_DAY,
+            "group_by": YfinanceGroupBy.TICKER,
+        }
+        self.assertEqual(expected_parameters, self.parameters)
+        expected_returns_series = pd.Series(
+            data={
+                "2022-11-07": True,
+                "2022-11-08": False,
+                "2022-11-09": False,
+                "2022-11-10": True,
+                "2022-11-11": True,
+                "2022-11-14": False,
+            }
+        )
+        expected_returns_series.index = pd.DatetimeIndex(
+            expected_returns_series.index, name="Date"
+        )
+        expected_returns_data = pd.DataFrame(
+            data={"CL=F": expected_returns_series}
+        )
+        self.assertTrue(expected_returns_data.equals(returns_data))
+
+    @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
+    def test_get_daily_returns_single_ticker_list(self, mock_get_data_method):
+
+        # Arrange
+        mock_get_data_method.side_effect = self.mock_download_side_effect
+        tickers = ["CL=F"]
+        period = "1wk"
+
+        # Act
+        returns_data = YfinanceDataProvider.get_daily_returns(
+            tickers=tickers, period=period
+        )
+
+        # Assert
+        expected_parameters = {
+            "tickers": ["CL=F"],
+            "period": "1wk",
+            "interval": YfinanceInterval.ONE_DAY,
+            "group_by": YfinanceGroupBy.TICKER,
+        }
+        self.assertEqual(expected_parameters, self.parameters)
+        expected_returns_series = pd.Series(
+            data={
+                "2022-11-07": True,
+                "2022-11-08": False,
+                "2022-11-09": False,
+                "2022-11-10": True,
+                "2022-11-11": True,
+                "2022-11-14": False,
+            }
+        )
+        expected_returns_series.index = pd.DatetimeIndex(
+            expected_returns_series.index, name="Date"
+        )
+        expected_returns_data = pd.DataFrame(
+            data={"CL=F": expected_returns_series}
+        )
+        self.assertTrue(expected_returns_data.equals(returns_data))
+
+    @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
+    def test_get_daily_returns_multiple_tickers_list(
+        self, mock_get_data_method
+    ):
+
+        # Arrange
+        mock_get_data_method.side_effect = self.mock_download_side_effect
+        tickers = ["CL=F", "EUR=X"]
+        period = "1wk"
+
+        # Act
+        returns_data = YfinanceDataProvider.get_daily_returns(
+            tickers=tickers, period=period
+        )
+
+        # Assert
+        expected_parameters = {
+            "tickers": ["CL=F", "EUR=X"],
+            "period": "1wk",
+            "interval": YfinanceInterval.ONE_DAY,
+            "group_by": YfinanceGroupBy.TICKER,
+        }
+        self.assertEqual(expected_parameters, self.parameters)
+        expected_returns_series_cl = pd.Series(
+            data={
+                "2022-11-07": True,
+                "2022-11-08": False,
+                "2022-11-09": False,
+                "2022-11-10": True,
+                "2022-11-11": True,
+                "2022-11-14": False,
+            }
+        )
+        expected_returns_series_cl.index = pd.DatetimeIndex(
+            expected_returns_series_cl.index, name="Date"
+        )
+        expected_returns_series_eur = pd.Series(
+            data={
+                "2022-11-07": False,
+                "2022-11-08": False,
+                "2022-11-09": False,
+                "2022-11-10": False,
+                "2022-11-11": False,
+                "2022-11-14": False,
+            }
+        )
+        expected_returns_series_eur.index = pd.DatetimeIndex(
+            expected_returns_series_eur.index, name="Date"
+        )
+        expected_returns_data = pd.DataFrame(
+            data={
+                "CL=F": expected_returns_series_cl,
+                "EUR=X": expected_returns_series_eur,
+            }
+        )
+        self.assertTrue(expected_returns_data.equals(returns_data))
+
+    @patch("yfinance.download")
+    def test_get_daily_returns_tickers_empty_str(self, mock_download_method):
+
+        # Arrange
+        mock_download_method.side_effect = self.mock_download_side_effect
+        tickers = ""
+        period = "1wk"
+
+        # Act / Assert
+        with self.assertRaises(ValueError) as e:
+            YfinanceDataProvider.get_daily_returns(
+                tickers=tickers, period=period
+            )
+        self.assertEqual(
+            str(e.exception), "Parameter 'tickers' cannot be empty."
+        )
+
+    @patch("yfinance.download")
+    def test_get_daily_returns_tickers_empty_list(self, mock_download_method):
+
+        # Arrange
+        mock_download_method.side_effect = self.mock_download_side_effect
+        tickers = []
+        period = "1wk"
+
+        # Act / Assert
+        with self.assertRaises(ValueError) as e:
+            YfinanceDataProvider.get_daily_returns(
+                tickers=tickers, period=period
+            )
+        self.assertEqual(
+            str(e.exception), "Parameter 'tickers' cannot be empty."
+        )
+
+    @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
+    def test_get_daily_returns_period_enum(self, mock_get_data_method):
+
+        # Arrange
+        mock_get_data_method.side_effect = self.mock_download_side_effect
+        tickers = ["CL=F", "EUR=X"]
+        period = YfinancePeriod.ONE_WEEK
+
+        # Act
+        returns_data = YfinanceDataProvider.get_daily_returns(
+            tickers=tickers, period=period
+        )
+
+        # Assert
+        expected_parameters = {
+            "tickers": ["CL=F", "EUR=X"],
+            "period": YfinancePeriod.ONE_WEEK,
+            "interval": YfinanceInterval.ONE_DAY,
+            "group_by": YfinanceGroupBy.TICKER,
+        }
+        self.assertEqual(expected_parameters, self.parameters)
+        expected_returns_series_cl = pd.Series(
+            data={
+                "2022-11-07": True,
+                "2022-11-08": False,
+                "2022-11-09": False,
+                "2022-11-10": True,
+                "2022-11-11": True,
+                "2022-11-14": False,
+            }
+        )
+        expected_returns_series_cl.index = pd.DatetimeIndex(
+            expected_returns_series_cl.index, name="Date"
+        )
+        expected_returns_series_eur = pd.Series(
+            data={
+                "2022-11-07": False,
+                "2022-11-08": False,
+                "2022-11-09": False,
+                "2022-11-10": False,
+                "2022-11-11": False,
+                "2022-11-14": False,
+            }
+        )
+        expected_returns_series_eur.index = pd.DatetimeIndex(
+            expected_returns_series_eur.index, name="Date"
+        )
+        expected_returns_data = pd.DataFrame(
+            data={
+                "CL=F": expected_returns_series_cl,
+                "EUR=X": expected_returns_series_eur,
+            }
+        )
+        self.assertTrue(expected_returns_data.equals(returns_data))
+
+    @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
+    def test_get_daily_returns_period_default(self, mock_get_data_method):
+
+        # Arrange
+        mock_get_data_method.side_effect = self.mock_download_side_effect
+        tickers = ["CL=F", "EUR=X"]
+
+        # Act
+        returns_data = YfinanceDataProvider.get_daily_returns(tickers=tickers)
+
+        # Assert
+        expected_parameters = {
+            "tickers": ["CL=F", "EUR=X"],
+            "period": YfinancePeriod.MAX,
+            "interval": YfinanceInterval.ONE_DAY,
+            "group_by": YfinanceGroupBy.TICKER,
+        }
+        self.assertEqual(expected_parameters, self.parameters)
+        expected_returns_series_cl = pd.Series(
+            data={
+                "2022-11-07": True,
+                "2022-11-08": False,
+                "2022-11-09": False,
+                "2022-11-10": True,
+                "2022-11-11": True,
+                "2022-11-14": False,
+            }
+        )
+        expected_returns_series_cl.index = pd.DatetimeIndex(
+            expected_returns_series_cl.index, name="Date"
+        )
+        expected_returns_series_eur = pd.Series(
+            data={
+                "2022-11-07": False,
+                "2022-11-08": False,
+                "2022-11-09": False,
+                "2022-11-10": False,
+                "2022-11-11": False,
+                "2022-11-14": False,
+            }
+        )
+        expected_returns_series_eur.index = pd.DatetimeIndex(
+            expected_returns_series_eur.index, name="Date"
+        )
+        expected_returns_data = pd.DataFrame(
+            data={
+                "CL=F": expected_returns_series_cl,
+                "EUR=X": expected_returns_series_eur,
+            }
+        )
+        self.assertTrue(expected_returns_data.equals(returns_data))
