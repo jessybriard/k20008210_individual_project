@@ -7,11 +7,7 @@ from unittest.mock import patch
 
 import pandas as pd
 
-from src.tools.constants import (
-    YfinanceGroupBy,
-    YfinanceInterval,
-    YfinancePeriod,
-)
+from src.tools.constants import YfinanceGroupBy, YfinanceInterval, YfinancePeriod
 from src.tools.yfinance_data_provider import YfinanceDataProvider
 
 
@@ -19,31 +15,18 @@ class TestYfinanceDataProvider(TestCase):
     """Test class for methods in class YfinanceDataProvider."""
 
     def setUp(self) -> None:
-        self.TEST_DATA_DIR = (
-            f"{os.path.dirname(os.path.abspath(__file__))}/test_data"
-        )
+        self.TEST_DATA_DIR = f"{os.path.dirname(os.path.abspath(__file__))}/test_data"
 
     def mock_download_side_effect(self, **kwargs):
         self.parameters = kwargs
         tickers = kwargs["tickers"]
-        # Multiple tickers request
-        if isinstance(tickers, list) and len(tickers) > 1:
-            if (
-                "group_by" in kwargs.keys()
-                and kwargs["group_by"] == YfinanceGroupBy.TICKER
-            ):
-                output_pickled_file_name = (
-                    "yf_download_group_by_ticker_output.pickle"
-                )
+        if isinstance(tickers, list) and len(tickers) > 1:  # Multiple tickers request
+            if "group_by" in kwargs.keys() and kwargs["group_by"] == YfinanceGroupBy.TICKER:
+                output_pickled_file_name = "yf_download_group_by_ticker_output.pickle"
             else:
-                output_pickled_file_name = (
-                    "yf_download_multiple_tickers_output.pickle"
-                )
-        # Single ticker request
-        else:
-            output_pickled_file_name = (
-                "yf_download_single_ticker_output.pickle"
-            )
+                output_pickled_file_name = "yf_download_multiple_tickers_output.pickle"
+        else:  # Single ticker request
+            output_pickled_file_name = "yf_download_single_ticker_output.pickle"
         with open(
             f"{self.TEST_DATA_DIR}/{output_pickled_file_name}",
             "rb",
@@ -153,9 +136,7 @@ class TestYfinanceDataProvider(TestCase):
                 interval=interval,
                 group_by=group_by,
             )
-        self.assertEqual(
-            str(e.exception), "Parameter 'tickers' cannot be empty."
-        )
+        self.assertEqual(str(e.exception), "Parameter 'tickers' cannot be empty.")
 
     @patch("yfinance.download")
     def test_get_data_tickers_empty_str(self, mock_download_method):
@@ -175,9 +156,7 @@ class TestYfinanceDataProvider(TestCase):
                 interval=interval,
                 group_by=group_by,
             )
-        self.assertEqual(
-            str(e.exception), "Parameter 'tickers' cannot be empty."
-        )
+        self.assertEqual(str(e.exception), "Parameter 'tickers' cannot be empty.")
 
     @patch("yfinance.download")
     def test_get_data_period_enum(self, mock_download_method):
@@ -276,9 +255,7 @@ class TestYfinanceDataProvider(TestCase):
         interval = "1d"
 
         # Act
-        data = YfinanceDataProvider.get_data(
-            tickers=tickers, period=period, interval=interval
-        )
+        data = YfinanceDataProvider.get_data(tickers=tickers, period=period, interval=interval)
 
         # Assert
         expected_parameters = {
@@ -291,9 +268,7 @@ class TestYfinanceDataProvider(TestCase):
         self.assertTrue(self.yf_download_output.equals(data))
 
     @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
-    def test_get_daily_close_prices_single_ticker_str(
-        self, mock_get_data_method
-    ):
+    def test_get_daily_close_prices_single_ticker_str(self, mock_get_data_method):
 
         # Arrange
         mock_get_data_method.side_effect = self.mock_download_side_effect
@@ -301,9 +276,7 @@ class TestYfinanceDataProvider(TestCase):
         period = "1wk"
 
         # Act
-        close_data = YfinanceDataProvider.get_daily_close_prices(
-            tickers=tickers, period=period
-        )
+        close_data = YfinanceDataProvider.get_daily_close_prices(tickers=tickers, period=period)
 
         # Assert
         expected_parameters = {
@@ -313,15 +286,11 @@ class TestYfinanceDataProvider(TestCase):
             "group_by": YfinanceGroupBy.COLUMN,
         }
         self.assertEqual(expected_parameters, self.parameters)
-        expected_close_data = pd.DataFrame(
-            {"CL=F": self.yf_download_output["Close"]}
-        )
+        expected_close_data = pd.DataFrame({"CL=F": self.yf_download_output["Close"]})
         self.assertTrue(expected_close_data.equals(close_data))
 
     @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
-    def test_get_daily_close_prices_single_ticker_list(
-        self, mock_get_data_method
-    ):
+    def test_get_daily_close_prices_single_ticker_list(self, mock_get_data_method):
 
         # Arrange
         mock_get_data_method.side_effect = self.mock_download_side_effect
@@ -329,9 +298,7 @@ class TestYfinanceDataProvider(TestCase):
         period = "1wk"
 
         # Act
-        close_data = YfinanceDataProvider.get_daily_close_prices(
-            tickers=tickers, period=period
-        )
+        close_data = YfinanceDataProvider.get_daily_close_prices(tickers=tickers, period=period)
 
         # Assert
         expected_parameters = {
@@ -341,15 +308,11 @@ class TestYfinanceDataProvider(TestCase):
             "group_by": YfinanceGroupBy.COLUMN,
         }
         self.assertEqual(expected_parameters, self.parameters)
-        expected_close_data = pd.DataFrame(
-            {"CL=F": self.yf_download_output["Close"]}
-        )
+        expected_close_data = pd.DataFrame({"CL=F": self.yf_download_output["Close"]})
         self.assertTrue(expected_close_data.equals(close_data))
 
     @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
-    def test_get_daily_close_prices_multiple_tickers_list(
-        self, mock_get_data_method
-    ):
+    def test_get_daily_close_prices_multiple_tickers_list(self, mock_get_data_method):
 
         # Arrange
         mock_get_data_method.side_effect = self.mock_download_side_effect
@@ -357,9 +320,7 @@ class TestYfinanceDataProvider(TestCase):
         period = "1wk"
 
         # Act
-        close_data = YfinanceDataProvider.get_daily_close_prices(
-            tickers=tickers, period=period
-        )
+        close_data = YfinanceDataProvider.get_daily_close_prices(tickers=tickers, period=period)
 
         # Assert
         expected_parameters = {
@@ -373,9 +334,7 @@ class TestYfinanceDataProvider(TestCase):
         self.assertTrue(expected_close_data.equals(close_data))
 
     @patch("yfinance.download")
-    def test_get_daily_close_prices_tickers_empty_list(
-        self, mock_download_method
-    ):
+    def test_get_daily_close_prices_tickers_empty_list(self, mock_download_method):
 
         # Arrange
         mock_download_method.side_effect = self.mock_download_side_effect
@@ -384,17 +343,11 @@ class TestYfinanceDataProvider(TestCase):
 
         # Act / Assert
         with self.assertRaises(ValueError) as e:
-            YfinanceDataProvider.get_daily_close_prices(
-                tickers=tickers, period=period
-            )
-        self.assertEqual(
-            str(e.exception), "Parameter 'tickers' cannot be empty."
-        )
+            YfinanceDataProvider.get_daily_close_prices(tickers=tickers, period=period)
+        self.assertEqual(str(e.exception), "Parameter 'tickers' cannot be empty.")
 
     @patch("yfinance.download")
-    def test_get_daily_close_prices_tickers_empty_str(
-        self, mock_download_method
-    ):
+    def test_get_daily_close_prices_tickers_empty_str(self, mock_download_method):
 
         # Arrange
         mock_download_method.side_effect = self.mock_download_side_effect
@@ -403,12 +356,8 @@ class TestYfinanceDataProvider(TestCase):
 
         # Act / Assert
         with self.assertRaises(ValueError) as e:
-            YfinanceDataProvider.get_daily_close_prices(
-                tickers=tickers, period=period
-            )
-        self.assertEqual(
-            str(e.exception), "Parameter 'tickers' cannot be empty."
-        )
+            YfinanceDataProvider.get_daily_close_prices(tickers=tickers, period=period)
+        self.assertEqual(str(e.exception), "Parameter 'tickers' cannot be empty.")
 
     @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
     def test_get_daily_close_prices_period_enum(self, mock_get_data_method):
@@ -419,9 +368,7 @@ class TestYfinanceDataProvider(TestCase):
         period = YfinancePeriod.ONE_WEEK
 
         # Act
-        close_data = YfinanceDataProvider.get_daily_close_prices(
-            tickers=tickers, period=period
-        )
+        close_data = YfinanceDataProvider.get_daily_close_prices(tickers=tickers, period=period)
 
         # Assert
         expected_parameters = {
@@ -442,9 +389,7 @@ class TestYfinanceDataProvider(TestCase):
         tickers = ["CL=F", "EUR=X"]
 
         # Act
-        close_data = YfinanceDataProvider.get_daily_close_prices(
-            tickers=tickers
-        )
+        close_data = YfinanceDataProvider.get_daily_close_prices(tickers=tickers)
 
         # Assert
         expected_parameters = {
@@ -466,9 +411,7 @@ class TestYfinanceDataProvider(TestCase):
         period = "1wk"
 
         # Act
-        returns_data = YfinanceDataProvider.get_daily_returns(
-            tickers=tickers, period=period
-        )
+        returns_data = YfinanceDataProvider.get_daily_returns(tickers=tickers, period=period)
 
         # Assert
         expected_parameters = {
@@ -488,12 +431,8 @@ class TestYfinanceDataProvider(TestCase):
                 "2022-11-14": False,
             }
         )
-        expected_returns_series.index = pd.DatetimeIndex(
-            expected_returns_series.index, name="Date"
-        )
-        expected_returns_data = pd.DataFrame(
-            data={"CL=F": expected_returns_series}
-        )
+        expected_returns_series.index = pd.DatetimeIndex(expected_returns_series.index, name="Date")
+        expected_returns_data = pd.DataFrame(data={"CL=F": expected_returns_series})
         self.assertTrue(expected_returns_data.equals(returns_data))
 
     @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
@@ -505,9 +444,7 @@ class TestYfinanceDataProvider(TestCase):
         period = "1wk"
 
         # Act
-        returns_data = YfinanceDataProvider.get_daily_returns(
-            tickers=tickers, period=period
-        )
+        returns_data = YfinanceDataProvider.get_daily_returns(tickers=tickers, period=period)
 
         # Assert
         expected_parameters = {
@@ -527,18 +464,12 @@ class TestYfinanceDataProvider(TestCase):
                 "2022-11-14": False,
             }
         )
-        expected_returns_series.index = pd.DatetimeIndex(
-            expected_returns_series.index, name="Date"
-        )
-        expected_returns_data = pd.DataFrame(
-            data={"CL=F": expected_returns_series}
-        )
+        expected_returns_series.index = pd.DatetimeIndex(expected_returns_series.index, name="Date")
+        expected_returns_data = pd.DataFrame(data={"CL=F": expected_returns_series})
         self.assertTrue(expected_returns_data.equals(returns_data))
 
     @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
-    def test_get_daily_returns_multiple_tickers_list(
-        self, mock_get_data_method
-    ):
+    def test_get_daily_returns_multiple_tickers_list(self, mock_get_data_method):
 
         # Arrange
         mock_get_data_method.side_effect = self.mock_download_side_effect
@@ -546,9 +477,7 @@ class TestYfinanceDataProvider(TestCase):
         period = "1wk"
 
         # Act
-        returns_data = YfinanceDataProvider.get_daily_returns(
-            tickers=tickers, period=period
-        )
+        returns_data = YfinanceDataProvider.get_daily_returns(tickers=tickers, period=period)
 
         # Assert
         expected_parameters = {
@@ -568,9 +497,7 @@ class TestYfinanceDataProvider(TestCase):
                 "2022-11-14": False,
             }
         )
-        expected_returns_series_cl.index = pd.DatetimeIndex(
-            expected_returns_series_cl.index, name="Date"
-        )
+        expected_returns_series_cl.index = pd.DatetimeIndex(expected_returns_series_cl.index, name="Date")
         expected_returns_series_eur = pd.Series(
             data={
                 "2022-11-07": False,
@@ -581,9 +508,7 @@ class TestYfinanceDataProvider(TestCase):
                 "2022-11-14": False,
             }
         )
-        expected_returns_series_eur.index = pd.DatetimeIndex(
-            expected_returns_series_eur.index, name="Date"
-        )
+        expected_returns_series_eur.index = pd.DatetimeIndex(expected_returns_series_eur.index, name="Date")
         expected_returns_data = pd.DataFrame(
             data={
                 "CL=F": expected_returns_series_cl,
@@ -602,12 +527,8 @@ class TestYfinanceDataProvider(TestCase):
 
         # Act / Assert
         with self.assertRaises(ValueError) as e:
-            YfinanceDataProvider.get_daily_returns(
-                tickers=tickers, period=period
-            )
-        self.assertEqual(
-            str(e.exception), "Parameter 'tickers' cannot be empty."
-        )
+            YfinanceDataProvider.get_daily_returns(tickers=tickers, period=period)
+        self.assertEqual(str(e.exception), "Parameter 'tickers' cannot be empty.")
 
     @patch("yfinance.download")
     def test_get_daily_returns_tickers_empty_list(self, mock_download_method):
@@ -619,12 +540,8 @@ class TestYfinanceDataProvider(TestCase):
 
         # Act / Assert
         with self.assertRaises(ValueError) as e:
-            YfinanceDataProvider.get_daily_returns(
-                tickers=tickers, period=period
-            )
-        self.assertEqual(
-            str(e.exception), "Parameter 'tickers' cannot be empty."
-        )
+            YfinanceDataProvider.get_daily_returns(tickers=tickers, period=period)
+        self.assertEqual(str(e.exception), "Parameter 'tickers' cannot be empty.")
 
     @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
     def test_get_daily_returns_period_enum(self, mock_get_data_method):
@@ -635,9 +552,7 @@ class TestYfinanceDataProvider(TestCase):
         period = YfinancePeriod.ONE_WEEK
 
         # Act
-        returns_data = YfinanceDataProvider.get_daily_returns(
-            tickers=tickers, period=period
-        )
+        returns_data = YfinanceDataProvider.get_daily_returns(tickers=tickers, period=period)
 
         # Assert
         expected_parameters = {
@@ -657,9 +572,7 @@ class TestYfinanceDataProvider(TestCase):
                 "2022-11-14": False,
             }
         )
-        expected_returns_series_cl.index = pd.DatetimeIndex(
-            expected_returns_series_cl.index, name="Date"
-        )
+        expected_returns_series_cl.index = pd.DatetimeIndex(expected_returns_series_cl.index, name="Date")
         expected_returns_series_eur = pd.Series(
             data={
                 "2022-11-07": False,
@@ -670,9 +583,7 @@ class TestYfinanceDataProvider(TestCase):
                 "2022-11-14": False,
             }
         )
-        expected_returns_series_eur.index = pd.DatetimeIndex(
-            expected_returns_series_eur.index, name="Date"
-        )
+        expected_returns_series_eur.index = pd.DatetimeIndex(expected_returns_series_eur.index, name="Date")
         expected_returns_data = pd.DataFrame(
             data={
                 "CL=F": expected_returns_series_cl,
@@ -709,9 +620,7 @@ class TestYfinanceDataProvider(TestCase):
                 "2022-11-14": False,
             }
         )
-        expected_returns_series_cl.index = pd.DatetimeIndex(
-            expected_returns_series_cl.index, name="Date"
-        )
+        expected_returns_series_cl.index = pd.DatetimeIndex(expected_returns_series_cl.index, name="Date")
         expected_returns_series_eur = pd.Series(
             data={
                 "2022-11-07": False,
@@ -722,9 +631,7 @@ class TestYfinanceDataProvider(TestCase):
                 "2022-11-14": False,
             }
         )
-        expected_returns_series_eur.index = pd.DatetimeIndex(
-            expected_returns_series_eur.index, name="Date"
-        )
+        expected_returns_series_eur.index = pd.DatetimeIndex(expected_returns_series_eur.index, name="Date")
         expected_returns_data = pd.DataFrame(
             data={
                 "CL=F": expected_returns_series_cl,

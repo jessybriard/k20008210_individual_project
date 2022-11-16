@@ -1,16 +1,11 @@
-"""Class to get financial data from Yahoo Finance, using the yfinance Python
-API."""
+"""Class to get financial data from Yahoo Finance, using the yfinance Python API."""
 
 from typing import List, Union
 
 import pandas as pd
 import yfinance as yf
 
-from src.tools.constants import (
-    YfinanceGroupBy,
-    YfinanceInterval,
-    YfinancePeriod,
-)
+from src.tools.constants import YfinanceGroupBy, YfinanceInterval, YfinancePeriod
 from src.tools.helper_methods import extract_returns_from_dataframe
 
 
@@ -27,17 +22,14 @@ class YfinanceDataProvider:
         """Get historical prices data from Yahoo Finance.
 
         Args:
-            tickers (Union[str, List[str]]): The ticker for the asset(s) to
-                retrieve historical prices for.
+            tickers (Union[str, List[str]]): The ticker for the asset(s) to retrieve historical prices for.
             period (Union[YfinancePeriod, str]): The period of the time series.
-            interval (Union[YfinanceInterval, str]): The size of the
-                interval between each data point.
-            group_by (Union[YfinanceGroupBy, str]): Group values in df by
-                'column' or 'ticker' if getting data for multiples tickers.
+            interval (Union[YfinanceInterval, str]): The size of the interval between each data point.
+            group_by (Union[YfinanceGroupBy, str]): Group values in df by 'column' or 'ticker' if getting data for
+                multiple tickers.
 
         Returns:
-            data (pd.DataFrame): The historical prices time series, as returned
-                by yfinance.
+            data (pd.DataFrame): The historical prices time series, as returned by yfinance.
 
         """
 
@@ -51,8 +43,7 @@ class YfinanceDataProvider:
         if isinstance(group_by, YfinanceGroupBy):
             group_by = group_by.value
 
-        # An invalid request to yf.download() will return a pandas DataFrame
-        # with named columns but empty values (no rows).
+        # Invalid request to yf.download() will return a pandas DataFrame with named columns but empty values (no rows).
         data = yf.download(
             tickers=tickers,
             period=period,
@@ -70,8 +61,7 @@ class YfinanceDataProvider:
         """Get historical daily Close prices for tickers, from Yahoo Finance.
 
         Args:
-            tickers (Union[str, List[str]]): The ticker for the asset(s) to
-                retrieve daily historical Close prices for.
+            tickers (Union[str, List[str]]): The ticker for the asset(s) to retrieve daily historical Close prices for.
             period (Union[YfinancePeriod, str]): The period of the time series.
 
         Returns:
@@ -98,17 +88,15 @@ class YfinanceDataProvider:
         tickers: Union[str, List[str]],
         period: Union[YfinancePeriod, str] = YfinancePeriod.MAX,
     ) -> pd.DataFrame:
-        """Get historical daily Open and Close prices for tickers, from Yahoo
-        Finance, and calculate daily returns.
+        """Get historical daily Open and Close prices for tickers, from Yahoo Finance, and calculate daily returns.
 
         Args:
-            tickers (Union[str, List[str]]): The ticker for the asset(s) to
-                retrieve daily historical Open and Close prices for.
+            tickers (Union[str, List[str]]): The ticker for the asset(s) to retrieve daily historical Open and Close
+                prices for.
             period (Union[YfinancePeriod, str]): The period of the time series.
 
         Returns:
-            returns_data (pd.DataFrame): The calculated daily returns time
-                series.
+            returns_data (pd.DataFrame): The calculated daily returns time series.
 
         """
 
@@ -122,9 +110,7 @@ class YfinanceDataProvider:
         if isinstance(tickers, list) and len(tickers) > 1:
             returns_data = pd.DataFrame()
             for ticker in tickers:
-                ticker_returns_data = extract_returns_from_dataframe(
-                    data=data[ticker]
-                )
+                ticker_returns_data = extract_returns_from_dataframe(data=data[ticker])
                 returns_data = pd.concat(
                     [
                         returns_data,
@@ -136,7 +122,5 @@ class YfinanceDataProvider:
         else:
             if isinstance(tickers, list):
                 tickers = tickers[0]
-            return pd.DataFrame(
-                data={tickers: extract_returns_from_dataframe(data=data)}
-            )
+            return pd.DataFrame(data={tickers: extract_returns_from_dataframe(data=data)})
         return returns_data
