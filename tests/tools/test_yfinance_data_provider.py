@@ -34,6 +34,8 @@ class TestYfinanceDataProvider(TestCase):
             self.yf_download_output = pickle.load(file)
         return self.yf_download_output
 
+    # Tests for method get_data()
+
     @patch("yfinance.download")
     def test_get_data_single_ticker_str(self, mock_download_method):
 
@@ -289,6 +291,8 @@ class TestYfinanceDataProvider(TestCase):
         expected_close_data = pd.DataFrame({"CL=F": self.yf_download_output["Close"]})
         self.assertTrue(expected_close_data.equals(close_data))
 
+    # Tests for method get_daily_close_prices()
+
     @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
     def test_get_daily_close_prices_single_ticker_list(self, mock_get_data_method):
 
@@ -401,6 +405,8 @@ class TestYfinanceDataProvider(TestCase):
         self.assertEqual(expected_parameters, self.parameters)
         expected_close_data = self.yf_download_output["Close"]
         self.assertTrue(expected_close_data.equals(close_data))
+
+    # Tests for method get_daily_returns()
 
     @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
     def test_get_daily_returns_single_ticker_str(self, mock_get_data_method):
