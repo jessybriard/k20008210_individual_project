@@ -11,6 +11,8 @@ from src.tools.labeled_data_builder.time_series_forecasting import create_labele
 class TestLabeledDataBuilderTimeSeriesForecasting(TestCase):
     """Test class for methods in labeled_data_builder/time_series_forecasting.py."""
 
+    # Tests for method create_labeled_data_individual_approach()
+
     def test_create_labeled_data_individual_approach_single_ticker_data(self):
 
         # Arrange

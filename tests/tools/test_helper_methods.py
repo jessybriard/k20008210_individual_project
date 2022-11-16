@@ -11,6 +11,8 @@ from src.tools.helper_methods import extract_returns_from_dataframe
 class TestHelperMethods(TestCase):
     """Test class for methods in file helper_methods.py."""
 
+    # Tests for method extract_returns_from_dataframe()
+
     def test_extract_returns_from_dataframe_no_nan(self):
 
         # Arrange
@@ -28,12 +30,8 @@ class TestHelperMethods(TestCase):
         returns_series = extract_returns_from_dataframe(data=data)
 
         # Assert
-        expected_returns_series = pd.Series(
-            data={"2022-11-03": False, "2022-11-04": True, "2022-11-07": False}
-        )
-        expected_returns_series.index = pd.DatetimeIndex(
-            expected_returns_series.index, name="Date"
-        )
+        expected_returns_series = pd.Series(data={"2022-11-03": False, "2022-11-04": True, "2022-11-07": False})
+        expected_returns_series.index = pd.DatetimeIndex(expected_returns_series.index, name="Date")
         self.assertTrue(expected_returns_series.equals(returns_series))
 
     def test_extract_returns_from_dataframe_open_nan(self):
@@ -60,9 +58,7 @@ class TestHelperMethods(TestCase):
                 "2022-11-07": False,
             }
         )
-        expected_returns_series.index = pd.DatetimeIndex(
-            expected_returns_series.index, name="Date"
-        )
+        expected_returns_series.index = pd.DatetimeIndex(expected_returns_series.index, name="Date")
         self.assertTrue(expected_returns_series.equals(returns_series))
 
     def test_extract_returns_from_dataframe_close_nan(self):
@@ -89,9 +85,7 @@ class TestHelperMethods(TestCase):
                 "2022-11-07": math.nan,
             }
         )
-        expected_returns_series.index = pd.DatetimeIndex(
-            expected_returns_series.index, name="Date"
-        )
+        expected_returns_series.index = pd.DatetimeIndex(expected_returns_series.index, name="Date")
         self.assertTrue(expected_returns_series.equals(returns_series))
 
     def test_extract_returns_from_dataframe_empty_data(self):
@@ -106,7 +100,5 @@ class TestHelperMethods(TestCase):
 
         # Assert
         expected_returns_series = pd.Series(dtype=object)
-        expected_returns_series.index = pd.DatetimeIndex(
-            expected_returns_series.index, name="Date"
-        )
+        expected_returns_series.index = pd.DatetimeIndex(expected_returns_series.index, name="Date")
         self.assertTrue(expected_returns_series.equals(returns_series))

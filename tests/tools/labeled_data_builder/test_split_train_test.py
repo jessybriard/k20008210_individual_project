@@ -10,6 +10,8 @@ from src.tools.labeled_data_builder.split_train_test import split_time_series_fo
 class TestLabeledDataBuilderSplitTrainTest(TestCase):
     """Test class for methods in labeled_data_builder/split_train_test.py."""
 
+    # Tests for method split_time_series_forecasting()
+
     def test_split_time_series_forecasting_labeled_data_no_row(self):
         # Arrange
         data = pd.DataFrame(columns=["features", "labels"])
