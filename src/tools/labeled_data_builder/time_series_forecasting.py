@@ -30,7 +30,7 @@ def create_labeled_data_individual_approach(ticker: str, data: pd.DataFrame, fea
     features = []
     label = []
     for i in range(len(values) - features_length):
-        if math.nan not in values[i : i + features_length + 1]:
+        if True not in [math.isnan(value) for value in values[i : i + features_length + 1]]:
             features.append(values[i : i + features_length])
             label.append(values[i + features_length])
     return pd.DataFrame(data={"features": features, "label": label})
