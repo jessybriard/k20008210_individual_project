@@ -1,7 +1,8 @@
 """Method for statistical analysis of the correlation between two tickers."""
 
 import math
-from typing import Tuple, Union
+from itertools import product
+from typing import List, Tuple, Union
 
 import pandas as pd
 from scipy.stats.stats import pearsonr
@@ -10,7 +11,7 @@ from src.tools.constants import YfinanceGroupBy, YfinanceInterval, YfinancePerio
 from src.tools.yfinance_data_provider import YfinanceDataProvider
 
 
-def correlation_analysis(
+def correlation_analysis_single_combination(
     ticker1: str,
     ticker2: str,
     column_ticker1: str = "Close",
@@ -53,4 +54,38 @@ def correlation_analysis(
     non_nan_rows = [i for i in range(len(data)) if not math.isnan(data_ticker1[i]) and not math.isnan(data_ticker2[i])]
     clean_data_ticker1 = [data_ticker1[i] for i in non_nan_rows]
     clean_data_ticker2 = [data_ticker2[i] for i in non_nan_rows]
-    return pearsonr(clean_data_ticker1, clean_data_ticker2)
+    return type(pearsonr(clean_data_ticker1, clean_data_ticker2))
+
+
+def correlation_analysis_lists_cardinal_product(
+    list_ticker1: List[str], list_ticker2: List[str], column_ticker1: str, column_ticker2: str
+) -> dict:
+    """Analyse the correlation of all combinations (cardinal product) between two lists of tickers, for specific
+    attributes. Returns a dictionary containing correlation insights for all ticker combinations.
+
+    Args:
+        list_ticker1 (List[str]): First list of tickers, to analyse their correlation with the second list of tickers.
+        list_ticker2 (List[str]): Second list of tickers, to analyse their correlation with the first list of tickers.
+        column_ticker1 (str): The attribute of the ticker from the first list to use to analyse correlation.
+        column_ticker2 (str): The attribute of the ticker from the second list to use to analyse correlation.
+
+    Returns:
+        correlation_insights (dict): Dictionary containing correlation insights for all ticker combinations.
+    """
+    data = YfinanceDataProvider.get_data(
+        tickers=list_ticker1 + list_ticker2,
+        period=YfinancePeriod.TEN_YEARS,
+        interval=YfinanceInterval.ONE_DAY,
+        group_by=YfinanceGroupBy.COLUMN,
+    )
+    combinations = list(product(list_ticker1, list_ticker2))
+    correlations = {}
+    for commodity_ticker, forex_ticker in combinations:
+        correlations[(commodity_ticker, forex_ticker)] = correlation_analysis_single_combination(
+            ticker1=commodity_ticker,
+            ticker2=forex_ticker,
+            column_ticker1=column_ticker1,
+            column_ticker2=column_ticker2,
+            data=data,
+        )
+    return correlations
