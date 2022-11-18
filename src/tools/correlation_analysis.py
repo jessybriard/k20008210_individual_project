@@ -47,8 +47,11 @@ def correlation_analysis_single_combination(
             interval=YfinanceInterval.ONE_DAY,
             group_by=YfinanceGroupBy.COLUMN,
         )
-    if column_ticker1 not in data.columns or column_ticker2 not in data.columns:
+    attribute_columns = {attribute for attribute, ticker in data.columns}
+    if column_ticker1 not in attribute_columns or column_ticker2 not in attribute_columns:
         raise ValueError("Parameters 'column_ticker1' and 'column_ticker2' must represent valid columns of the 'data'.")
+    if ticker1 not in data[column_ticker1].columns or ticker2 not in data[column_ticker2].columns:
+        raise ValueError("Parameters 'ticker1' and 'ticker2' must represent valid tickers in the 'data'.")
     data_ticker1 = data[column_ticker1][ticker1].values
     data_ticker2 = data[column_ticker2][ticker2].values
     non_nan_rows = [i for i in range(len(data)) if not math.isnan(data_ticker1[i]) and not math.isnan(data_ticker2[i])]
