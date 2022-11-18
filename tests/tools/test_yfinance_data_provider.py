@@ -60,6 +60,7 @@ class TestYfinanceDataProvider(TestCase):
             "period": "1wk",
             "interval": "1d",
             "group_by": "column",
+            "progress": False,
         }
         self.assertEqual(expected_parameters, self.parameters)
         self.assertTrue(self.yf_download_output.equals(data))
@@ -88,6 +89,7 @@ class TestYfinanceDataProvider(TestCase):
             "period": "1wk",
             "interval": "1d",
             "group_by": "column",
+            "progress": False,
         }
         self.assertEqual(expected_parameters, self.parameters)
         self.assertTrue(self.yf_download_output.equals(data))
@@ -116,6 +118,7 @@ class TestYfinanceDataProvider(TestCase):
             "period": "1wk",
             "interval": "1d",
             "group_by": "column",
+            "progress": False,
         }
         self.assertEqual(expected_parameters, self.parameters)
         self.assertTrue(self.yf_download_output.equals(data))
@@ -184,6 +187,7 @@ class TestYfinanceDataProvider(TestCase):
             "period": "1wk",
             "interval": "1d",
             "group_by": "column",
+            "progress": False,
         }
         self.assertEqual(expected_parameters, self.parameters)
         self.assertIsInstance(self.parameters["period"], str)
@@ -213,6 +217,7 @@ class TestYfinanceDataProvider(TestCase):
             "period": "1wk",
             "interval": "1d",
             "group_by": "column",
+            "progress": False,
         }
         self.assertEqual(expected_parameters, self.parameters)
         self.assertIsInstance(self.parameters["interval"], str)
@@ -242,6 +247,7 @@ class TestYfinanceDataProvider(TestCase):
             "period": "1wk",
             "interval": "1d",
             "group_by": "column",
+            "progress": False,
         }
         self.assertEqual(expected_parameters, self.parameters)
         self.assertIsInstance(self.parameters["group_by"], str)
@@ -265,6 +271,7 @@ class TestYfinanceDataProvider(TestCase):
             "period": "1wk",
             "interval": "1d",
             "group_by": "column",
+            "progress": False,
         }
         self.assertEqual(expected_parameters, self.parameters)
         self.assertTrue(self.yf_download_output.equals(data))
