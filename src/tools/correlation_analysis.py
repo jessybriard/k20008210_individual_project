@@ -54,7 +54,7 @@ def correlation_analysis_single_combination(
     non_nan_rows = [i for i in range(len(data)) if not math.isnan(data_ticker1[i]) and not math.isnan(data_ticker2[i])]
     clean_data_ticker1 = [data_ticker1[i] for i in non_nan_rows]
     clean_data_ticker2 = [data_ticker2[i] for i in non_nan_rows]
-    return type(pearsonr(clean_data_ticker1, clean_data_ticker2))
+    return tuple(pearsonr(clean_data_ticker1, clean_data_ticker2))
 
 
 def correlation_analysis_lists_cardinal_product(
