@@ -44,12 +44,7 @@ class YfinanceDataProvider:
             group_by = group_by.value
 
         # Invalid request to yf.download() will return a pandas DataFrame with named columns but empty values (no rows).
-        data = yf.download(
-            tickers=tickers,
-            period=period,
-            interval=interval,
-            group_by=group_by,
-        )
+        data = yf.download(tickers=tickers, period=period, interval=interval, group_by=group_by, progress=False)
 
         return data
 
