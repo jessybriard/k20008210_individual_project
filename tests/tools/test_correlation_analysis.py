@@ -9,18 +9,17 @@ from unittest.mock import patch
 from scipy.stats import pearsonr
 
 from src.tools.constants import YfinanceGroupBy, YfinanceInterval, YfinancePeriod
-from src.tools.correlation_analysis import correlation_analysis_single_combination
+from src.tools.correlation_analysis import (
+    correlation_analysis_lists_cardinal_product,
+    correlation_analysis_single_combination,
+)
 
 
 class TestCorrelationAnalysis(TestCase):
     """Test class for methods in correlation_analysis.py."""
 
-    # Tests for method correlation_analysis_single_combination()
-
     def setUp(self) -> None:
-        test_data_dir = f"{os.path.dirname(os.path.abspath(__file__))}/test_data"
-        with open(f"{test_data_dir}/yf_download_multiple_tickers_output.pickle", "rb") as file:
-            self.data = pickle.load(file)
+        self.TEST_DATA_DIR = f"{os.path.dirname(os.path.abspath(__file__))}/test_data"
 
     def mock_get_data_side_effect(self, **kwargs):
         self.get_data_parameters = kwargs
@@ -30,6 +29,12 @@ class TestCorrelationAnalysis(TestCase):
         self.pearsonr_parameters = (list1, list2)
         return pearsonr(list1, list2)
 
+    # Tests for method correlation_analysis_single_combination()
+
+    def load_data_single_combination(self):
+        with open(f"{self.TEST_DATA_DIR}/yf_download_multiple_tickers_output.pickle", "rb") as file:
+            self.data = pickle.load(file)
+
     @patch("scipy.stats.pearsonr")
     @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
     def test_correlation_analysis_single_combination_ticker1_empty_str(
@@ -37,6 +42,7 @@ class TestCorrelationAnalysis(TestCase):
     ):
 
         # Arrange
+        self.load_data_single_combination()
         ticker1 = ""
         ticker2 = "EUR=X"
         column_ticker1 = "Close"
@@ -63,6 +69,7 @@ class TestCorrelationAnalysis(TestCase):
     ):
 
         # Arrange
+        self.load_data_single_combination()
         ticker1 = "CL=F"
         ticker2 = ""
         column_ticker1 = "Close"
@@ -89,6 +96,7 @@ class TestCorrelationAnalysis(TestCase):
     ):
 
         # Arrange
+        self.load_data_single_combination()
         ticker1 = "CL=F"
         ticker2 = "CL=F"
         column_ticker1 = "Close"
@@ -115,6 +123,7 @@ class TestCorrelationAnalysis(TestCase):
     ):
 
         # Arrange
+        self.load_data_single_combination()
         ticker1 = "CL=F"
         ticker2 = "EUR=X"
         column_ticker1 = ""
@@ -144,6 +153,7 @@ class TestCorrelationAnalysis(TestCase):
     ):
 
         # Arrange
+        self.load_data_single_combination()
         ticker1 = "CL=F"
         ticker2 = "EUR=X"
         column_ticker1 = "Close"
@@ -173,6 +183,7 @@ class TestCorrelationAnalysis(TestCase):
     ):
 
         # Arrange
+        self.load_data_single_combination()
         ticker1 = "CL=F"
         ticker2 = "EUR=X"
         column_ticker2 = "Close"
@@ -216,6 +227,7 @@ class TestCorrelationAnalysis(TestCase):
     ):
 
         # Arrange
+        self.load_data_single_combination()
         ticker1 = "CL=F"
         ticker2 = "EUR=X"
         column_ticker1 = "Close"
@@ -259,6 +271,7 @@ class TestCorrelationAnalysis(TestCase):
     ):
 
         # Arrange
+        self.load_data_single_combination()
         ticker1 = "CL=F"
         ticker2 = "EUR=X"
         column_ticker1 = "Settlement Price"
@@ -288,6 +301,7 @@ class TestCorrelationAnalysis(TestCase):
     ):
 
         # Arrange
+        self.load_data_single_combination()
         ticker1 = "CL=F"
         ticker2 = "EUR=X"
         column_ticker1 = "Close"
@@ -317,6 +331,7 @@ class TestCorrelationAnalysis(TestCase):
     ):
 
         # Arrange
+        self.load_data_single_combination()
         ticker1 = "GC=F"
         ticker2 = "EUR=X"
         column_ticker1 = "Close"
@@ -345,6 +360,7 @@ class TestCorrelationAnalysis(TestCase):
     ):
 
         # Arrange
+        self.load_data_single_combination()
         ticker1 = "CL=F"
         ticker2 = "CADUSD=X"
         column_ticker1 = "Close"
@@ -371,6 +387,7 @@ class TestCorrelationAnalysis(TestCase):
     def test_correlation_analysis_single_combination_data_none(self, mock_get_data_method, mock_pearsonr_method):
 
         # Arrange
+        self.load_data_single_combination()
         ticker1 = "CL=F"
         ticker2 = "EUR=X"
         column_ticker1 = "Close"
@@ -397,6 +414,7 @@ class TestCorrelationAnalysis(TestCase):
     def test_correlation_analysis_single_combination_data_default(self, mock_get_data_method, mock_pearsonr_method):
 
         # Arrange
+        self.load_data_single_combination()
         ticker1 = "CL=F"
         ticker2 = "EUR=X"
         column_ticker1 = "Close"
@@ -422,6 +440,7 @@ class TestCorrelationAnalysis(TestCase):
     ):
 
         # Arrange
+        self.load_data_single_combination()
         ticker1 = "CL=F"
         ticker2 = "EUR=X"
         column_ticker1 = "Close"
@@ -455,6 +474,7 @@ class TestCorrelationAnalysis(TestCase):
     ):
 
         # Arrange
+        self.load_data_single_combination()
         ticker1 = "CL=F"
         ticker2 = "EUR=X"
         column_ticker1 = "Close"
@@ -488,6 +508,7 @@ class TestCorrelationAnalysis(TestCase):
     ):
 
         # Arrange
+        self.load_data_single_combination()
         ticker1 = "CL=F"
         ticker2 = "EUR=X"
         column_ticker1 = "Close"
@@ -521,6 +542,7 @@ class TestCorrelationAnalysis(TestCase):
     def test_correlation_analysis_single_combination_no_nan_in_data(self, mock_get_data_method, mock_pearsonr_method):
 
         # Arrange
+        self.load_data_single_combination()
         ticker1 = "CL=F"
         ticker2 = "EUR=X"
         column_ticker1 = "Volume"
@@ -556,6 +578,7 @@ class TestCorrelationAnalysis(TestCase):
     ):
 
         # Arrange
+        self.load_data_single_combination()
         ticker1 = "CL=F"
         ticker2 = "EUR=X"
         column_ticker1 = "Volume"
@@ -576,3 +599,240 @@ class TestCorrelationAnalysis(TestCase):
         self.assertTrue(-1 <= pearson_corr_coef <= 1)
         p_value = returned_value[1]
         self.assertTrue(0 <= p_value <= 1)
+
+    # Tests for method correlation_analysis_lists_cardinal_product()
+
+    def load_data_cardinal_product(self):
+        with open(f"{self.TEST_DATA_DIR}/yf_download_cardinal_product_output.pickle", "rb") as file:
+            self.data = pickle.load(file)
+
+    @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
+    def test_correlation_analysis_lists_cardinal_product_list_ticker1_empty_list(self, mock_get_data_method):
+
+        # Arrange
+        self.load_data_cardinal_product()
+        list_ticker1 = []
+        list_ticker2 = ["EUR=X", "CADUSD=X", "GBP=X"]
+        column_ticker1 = "Volume"
+        column_ticker2 = "Close"
+        mock_get_data_method.side_effect = self.mock_get_data_side_effect
+
+        # Act
+        correlations = correlation_analysis_lists_cardinal_product(
+            list_ticker1=list_ticker1,
+            list_ticker2=list_ticker2,
+            column_ticker1=column_ticker1,
+            column_ticker2=column_ticker2,
+        )
+
+        # Assert
+        correlations_expected = {}
+        self.assertEqual(correlations_expected, correlations)
+
+    @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
+    def test_correlation_analysis_lists_cardinal_product_list_ticker2_empty_list(self, mock_get_data_method):
+
+        # Arrange
+        self.load_data_cardinal_product()
+        list_ticker1 = ["CL=F", "GC=F"]
+        list_ticker2 = []
+        column_ticker1 = "Volume"
+        column_ticker2 = "Close"
+        mock_get_data_method.side_effect = self.mock_get_data_side_effect
+
+        # Act
+        correlations = correlation_analysis_lists_cardinal_product(
+            list_ticker1=list_ticker1,
+            list_ticker2=list_ticker2,
+            column_ticker1=column_ticker1,
+            column_ticker2=column_ticker2,
+        )
+
+        # Assert
+        correlations_expected = {}
+        self.assertEqual(correlations_expected, correlations)
+
+    @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
+    def test_correlation_analysis_lists_cardinal_product_single_combination(self, mock_get_data_method):
+
+        # Arrange
+        self.load_data_cardinal_product()
+        list_ticker1 = ["CL=F"]
+        list_ticker2 = ["EUR=X"]
+        column_ticker1 = "Volume"
+        column_ticker2 = "Close"
+        mock_get_data_method.side_effect = self.mock_get_data_side_effect
+
+        # Act
+        correlations = correlation_analysis_lists_cardinal_product(
+            list_ticker1=list_ticker1,
+            list_ticker2=list_ticker2,
+            column_ticker1=column_ticker1,
+            column_ticker2=column_ticker2,
+        )
+
+        # Assert
+        self.assertEqual(1, len(correlations))
+        combinations_expected = {("CL=F", "EUR=X")}
+        self.assertEqual(combinations_expected, set(correlations.keys()))
+        for correlation in correlations.values():
+            self.assertIsInstance(correlation, tuple)
+            self.assertEqual(2, len(correlation))
+            pearson_corr_coef, p_value = correlation
+            self.assertIsInstance(pearson_corr_coef, float)
+            self.assertTrue(-1 <= pearson_corr_coef <= 1)
+            self.assertIsInstance(p_value, float)
+            self.assertTrue(0 <= p_value <= 1)
+
+    @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
+    def test_correlation_analysis_lists_cardinal_product_list_ticker1_length_one(self, mock_get_data_method):
+
+        # Arrange
+        self.load_data_cardinal_product()
+        list_ticker1 = ["CL=F"]
+        list_ticker2 = ["EUR=X", "CADUSD=X", "GBP=X"]
+        column_ticker1 = "Volume"
+        column_ticker2 = "Close"
+        mock_get_data_method.side_effect = self.mock_get_data_side_effect
+
+        # Act
+        correlations = correlation_analysis_lists_cardinal_product(
+            list_ticker1=list_ticker1,
+            list_ticker2=list_ticker2,
+            column_ticker1=column_ticker1,
+            column_ticker2=column_ticker2,
+        )
+
+        # Assert
+        self.assertEqual(3, len(correlations))
+        combinations_expected = {("CL=F", "EUR=X"), ("CL=F", "CADUSD=X"), ("CL=F", "GBP=X")}
+        self.assertEqual(combinations_expected, set(correlations.keys()))
+        for correlation in correlations.values():
+            self.assertIsInstance(correlation, tuple)
+            self.assertEqual(2, len(correlation))
+            pearson_corr_coef, p_value = correlation
+            self.assertIsInstance(pearson_corr_coef, float)
+            self.assertTrue(-1 <= pearson_corr_coef <= 1)
+            self.assertIsInstance(p_value, float)
+            self.assertTrue(0 <= p_value <= 1)
+
+    @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
+    def test_correlation_analysis_lists_cardinal_product_list_ticker2_length_one(self, mock_get_data_method):
+
+        # Arrange
+        self.load_data_cardinal_product()
+        list_ticker1 = ["CL=F", "GC=F"]
+        list_ticker2 = ["EUR=X"]
+        column_ticker1 = "Volume"
+        column_ticker2 = "Close"
+        mock_get_data_method.side_effect = self.mock_get_data_side_effect
+
+        # Act
+        correlations = correlation_analysis_lists_cardinal_product(
+            list_ticker1=list_ticker1,
+            list_ticker2=list_ticker2,
+            column_ticker1=column_ticker1,
+            column_ticker2=column_ticker2,
+        )
+
+        # Assert
+        self.assertEqual(2, len(correlations))
+        combinations_expected = {("CL=F", "EUR=X"), ("GC=F", "EUR=X")}
+        self.assertEqual(combinations_expected, set(correlations.keys()))
+        for correlation in correlations.values():
+            self.assertIsInstance(correlation, tuple)
+            self.assertEqual(2, len(correlation))
+            pearson_corr_coef, p_value = correlation
+            self.assertIsInstance(pearson_corr_coef, float)
+            self.assertTrue(-1 <= pearson_corr_coef <= 1)
+            self.assertIsInstance(p_value, float)
+            self.assertTrue(0 <= p_value <= 1)
+
+    @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
+    def test_correlation_analysis_lists_cardinal_product_list_ticker1_list_ticker2_length_over_one(
+        self, mock_get_data_method
+    ):
+
+        # Arrange
+        self.load_data_cardinal_product()
+        list_ticker1 = ["CL=F", "GC=F"]
+        list_ticker2 = ["EUR=X", "CADUSD=X", "GBP=X"]
+        column_ticker1 = "Volume"
+        column_ticker2 = "Close"
+        mock_get_data_method.side_effect = self.mock_get_data_side_effect
+
+        # Act
+        correlations = correlation_analysis_lists_cardinal_product(
+            list_ticker1=list_ticker1,
+            list_ticker2=list_ticker2,
+            column_ticker1=column_ticker1,
+            column_ticker2=column_ticker2,
+        )
+
+        # Assert
+        self.assertEqual(6, len(correlations))
+        combinations_expected = {
+            ("CL=F", "EUR=X"),
+            ("CL=F", "CADUSD=X"),
+            ("CL=F", "GBP=X"),
+            ("GC=F", "EUR=X"),
+            ("GC=F", "CADUSD=X"),
+            ("GC=F", "GBP=X"),
+        }
+        self.assertEqual(combinations_expected, set(correlations.keys()))
+        for correlation in correlations.values():
+            self.assertIsInstance(correlation, tuple)
+            self.assertEqual(2, len(correlation))
+            pearson_corr_coef, p_value = correlation
+            self.assertIsInstance(pearson_corr_coef, float)
+            self.assertTrue(-1 <= pearson_corr_coef <= 1)
+            self.assertIsInstance(p_value, float)
+            self.assertTrue(0 <= p_value <= 1)
+
+    @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
+    def test_correlation_analysis_lists_cardinal_product_column_ticker1_not_in_data(self, mock_get_data_method):
+
+        # Arrange
+        self.load_data_cardinal_product()
+        list_ticker1 = ["CL=F", "GC=F"]
+        list_ticker2 = ["EUR=X", "CADUSD=X", "GBP=X"]
+        column_ticker1 = "Settlement Price"
+        column_ticker2 = "Close"
+        mock_get_data_method.side_effect = self.mock_get_data_side_effect
+
+        # Act / Assert
+        with self.assertRaises(ValueError) as e:
+            correlation_analysis_lists_cardinal_product(
+                list_ticker1=list_ticker1,
+                list_ticker2=list_ticker2,
+                column_ticker1=column_ticker1,
+                column_ticker2=column_ticker2,
+            )
+        self.assertEqual(
+            str(e.exception),
+            "Parameters 'column_ticker1' and 'column_ticker2' must represent valid columns of the 'data'.",
+        )
+
+    @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
+    def test_correlation_analysis_lists_cardinal_product_column_ticker2_not_in_data(self, mock_get_data_method):
+
+        # Arrange
+        self.load_data_cardinal_product()
+        list_ticker1 = ["CL=F", "GC=F"]
+        list_ticker2 = ["EUR=X", "CADUSD=X", "GBP=X"]
+        column_ticker1 = "Volume"
+        column_ticker2 = "Settlement Price"
+        mock_get_data_method.side_effect = self.mock_get_data_side_effect
+
+        # Act / Assert
+        with self.assertRaises(ValueError) as e:
+            correlation_analysis_lists_cardinal_product(
+                list_ticker1=list_ticker1,
+                list_ticker2=list_ticker2,
+                column_ticker1=column_ticker1,
+                column_ticker2=column_ticker2,
+            )
+        self.assertEqual(
+            str(e.exception),
+            "Parameters 'column_ticker1' and 'column_ticker2' must represent valid columns of the 'data'.",
+        )
