@@ -5,7 +5,7 @@ from itertools import product
 from typing import List, Tuple, Union
 
 import pandas as pd
-from scipy.stats.stats import pearsonr
+from scipy import stats
 
 from src.tools.constants import YfinanceGroupBy, YfinanceInterval, YfinancePeriod
 from src.tools.yfinance_data_provider import YfinanceDataProvider
@@ -36,7 +36,7 @@ def correlation_analysis_single_combination(
         p_value (float): The p-value between the two datasets, for this Pearson correlation coefficient.
 
     """
-    if not ticker1 or not ticker2 or ticker1 == ticker2:
+    if not ticker1 or not ticker2:
         raise ValueError("Parameters 'ticker1' and 'ticker2' must be non-empty.")
     if ticker1 == ticker2:
         raise ValueError("Parameters 'ticker1' and 'ticker2' must represent different assets.")
@@ -57,7 +57,7 @@ def correlation_analysis_single_combination(
     non_nan_rows = [i for i in range(len(data)) if not math.isnan(data_ticker1[i]) and not math.isnan(data_ticker2[i])]
     clean_data_ticker1 = [data_ticker1[i] for i in non_nan_rows]
     clean_data_ticker2 = [data_ticker2[i] for i in non_nan_rows]
-    return tuple(pearsonr(clean_data_ticker1, clean_data_ticker2))
+    return tuple(stats.pearsonr(clean_data_ticker1, clean_data_ticker2))
 
 
 def correlation_analysis_lists_cardinal_product(
