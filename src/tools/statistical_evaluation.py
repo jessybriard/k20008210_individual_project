@@ -14,7 +14,14 @@ class ClassificationEvaluation:
 
     accuracy, precision, recall, f1_score = 0, 0, 0, 0
 
-    def __init__(self, y_true: List[bool], y_predicted: List[bool]):
+    def __init__(self, y_true: List[bool], y_predicted: List[bool]) -> None:
+        """Constructor for class ClassificationEvaluation. Check the length of the list parameters, compute the
+        classification report from sklearn.methods, and extract relevant scores as instance variables.
+
+        Args:
+            y_true (List[bool]): The true values for the predicted label.
+            y_predicted (List[bool]): The predicted values for the label.
+        """
         self._validate_predictions_length(y_true=y_true, y_predicted=y_predicted)
         self.y_true = y_true
         self.y_predicted = y_predicted
