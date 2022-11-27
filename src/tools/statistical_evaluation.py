@@ -15,7 +15,7 @@ class ClassificationEvaluation:
     accuracy, precision, recall, f1_score = 0, 0, 0, 0
 
     def __init__(self, y_true: List[bool], y_predicted: List[bool]):
-        self._validate_predictions_length(y_true, y_predicted)
+        self._validate_predictions_length(y_true=y_true, y_predicted=y_predicted)
         self.y_true = y_true
         self.y_predicted = y_predicted
         self.classification_report = metrics.classification_report(y_true=y_true, y_pred=y_predicted, output_dict=True)
@@ -29,8 +29,8 @@ class ClassificationEvaluation:
             y_true (List[Any]): The true values for the predicted label.
             y_predicted (List[Any]): The predicted values for the label.
         """
-        if len(y_true) != len(y_predicted):
-            raise ValueError("Parameters 'y_true' and 'y_predicted' must be lists of same length.")
+        if not y_true or not y_predicted or len(y_true) != len(y_predicted):
+            raise ValueError("Parameters 'y_true' and 'y_predicted' must be non-empty lists of same length.")
 
     def _extract_scores_from_classification_report(self) -> None:
         """Extract evaluation scores from the classification_report instance variable, retrieved from sklearn.metrics.
