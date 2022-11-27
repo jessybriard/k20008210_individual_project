@@ -22,7 +22,7 @@ class ClassificationEvaluation:
         self._extract_scores_from_classification_report()
 
     @staticmethod
-    def _validate_predictions_length(y_true, y_predicted) -> None:
+    def _validate_predictions_length(y_true: List, y_predicted: List) -> None:
         """Check that true values and predicted values are lists of same length, otherwise raise an Exception.
 
         Args:
