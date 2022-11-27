@@ -12,13 +12,17 @@ class ClassificationEvaluation:
     Classification models.
     """
 
+    accuracy, precision, recall, f1_score = 0, 0, 0, 0
+
     def __init__(self, y_true: List[bool], y_predicted: List[bool]):
         self._validate_predictions_length(y_true, y_predicted)
         self.y_true = y_true
         self.y_predicted = y_predicted
+        self.classification_report = metrics.classification_report(y_true=y_true, y_pred=y_predicted, output_dict=True)
+        self._extract_scores_from_classification_report()
 
     @staticmethod
-    def _validate_predictions_length(y_true, y_predicted):
+    def _validate_predictions_length(y_true, y_predicted) -> None:
         """Check that true values and predicted values are lists of same length, otherwise raise an Exception.
 
         Args:
@@ -28,19 +32,20 @@ class ClassificationEvaluation:
         if len(y_true) != len(y_predicted):
             raise ValueError("Parameters 'y_true' and 'y_predicted' must be lists of same length.")
 
-    def accuracy(self) -> float:
-        """Calculate the Accuracy of the prediction.
-
-        Returns:
-            accuracy (float): The value of the prediction's accuracy.
+    def _extract_scores_from_classification_report(self) -> None:
+        """Extract evaluation scores from the classification_report instance variable, retrieved from sklearn.metrics.
+        Assign values for accuracy, precision, recall and f1_score.
         """
-        return len([True for i in range(len(self.y_true)) if self.y_true[i] == self.y_predicted[i]]) / len(self.y_true)
+        self.accuracy = self.classification_report["accuracy"]
+        weighted_avg_report: dict = self.classification_report["weighted avg"]
+        self.precision = weighted_avg_report["precision"]
+        self.recall = weighted_avg_report["recall"]
+        self.f1_score = weighted_avg_report["f1-score"]
 
-    def f1_score(self) -> dict:
-        """Calculate the F1 Score of the prediction, for each possible label value.
-
-        Returns:
-            f1_scores (dict): The value of the prediction's F1 Score, for each possible label value.
-        """
-        labels_score = metrics.f1_score(y_true=self.y_true, y_pred=self.y_predicted, labels=[True, False], average=None)
-        return {True: labels_score[0], False: labels_score[1]}
+    def __str__(self) -> str:
+        return (
+            f"Accuracy: {self.accuracy}\n"
+            f"Precision: {self.precision}\n"
+            f"Recall: {self.recall}\n"
+            f"F1 Score: {self.f1_score}"
+        )
