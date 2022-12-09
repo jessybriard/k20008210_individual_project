@@ -430,7 +430,11 @@ class TestLabeledDataBuilderTimeSeriesForecasting(TestCase):
 
         # Assert
         expected_labeled_data = pd.DataFrame(
-            data={"features": [[False, False, True, True], [True, True, True, False]], "label": [False, True]}
+            data={
+                "features_individual": [[False, True], [True, False]],
+                "features_sector": [[False, False, True, True], [True, True, True, False]],
+                "label": [False, True],
+            }
         )
         self.assertTrue(expected_labeled_data.equals(labeled_data))
 
@@ -443,7 +447,7 @@ class TestLabeledDataBuilderTimeSeriesForecasting(TestCase):
             data={
                 "Date": ["2022-11-07", "2022-11-08", "2022-11-09", "2022-11-10", "2022-11-11", "2022-11-14"],
                 "CL=F": [True, False, False, True, True, False],
-                "EUR=X": [math.nan, True, False, math.nan, False, True],
+                "EUR=X": [False, True, False, math.nan, False, True],
             }
         )
         features_length = 2
@@ -455,7 +459,11 @@ class TestLabeledDataBuilderTimeSeriesForecasting(TestCase):
 
         # Assert
         expected_labeled_data = pd.DataFrame(
-            data={"features": [[True, False], [False, True], [True, True]], "label": [False, False, True]}
+            data={
+                "features_individual": [[False, True]],
+                "features_sector": [[True, False, False, True]],
+                "label": [False],
+            }
         )
         self.assertTrue(expected_labeled_data.equals(labeled_data))
 
@@ -479,7 +487,7 @@ class TestLabeledDataBuilderTimeSeriesForecasting(TestCase):
         )
 
         # Assert
-        expected_labeled_data = pd.DataFrame(data={"features": [], "label": []})
+        expected_labeled_data = pd.DataFrame(data={"features_individual": [], "features_sector": [], "label": []})
         self.assertTrue(expected_labeled_data.equals(labeled_data))
 
     def test_create_labeled_data_sector_approach_data_nan_only(self):
@@ -502,7 +510,7 @@ class TestLabeledDataBuilderTimeSeriesForecasting(TestCase):
         )
 
         # Assert
-        expected_labeled_data = pd.DataFrame(data={"features": [], "label": []})
+        expected_labeled_data = pd.DataFrame(data={"features_individual": [], "features_sector": [], "label": []})
         self.assertTrue(expected_labeled_data.equals(labeled_data))
 
     def test_create_labeled_data_sector_approach_one_example(self):
@@ -527,7 +535,8 @@ class TestLabeledDataBuilderTimeSeriesForecasting(TestCase):
         # Assert
         expected_labeled_data = pd.DataFrame(
             data={
-                "features": [
+                "features_individual": [[False, True, False, True, False]],
+                "features_sector": [
                     [True, False, False, True, False, False, True, True, True, False],
                 ],
                 "label": [True],
@@ -555,7 +564,7 @@ class TestLabeledDataBuilderTimeSeriesForecasting(TestCase):
         )
 
         # Assert
-        expected_labeled_data = pd.DataFrame(data={"features": [], "label": []})
+        expected_labeled_data = pd.DataFrame(data={"features_individual": [], "features_sector": [], "label": []})
         self.assertTrue(expected_labeled_data.equals(labeled_data))
 
     def test_create_labeled_data_sector_approach_ticker_label_in_tickers_features(self):
@@ -580,7 +589,8 @@ class TestLabeledDataBuilderTimeSeriesForecasting(TestCase):
         # Assert
         expected_labeled_data = pd.DataFrame(
             data={
-                "features": [
+                "features_individual": [[False, True, False], [True, False, True], [False, True, False]],
+                "features_sector": [
                     [True, False, False, True, False, False],
                     [False, True, False, False, True, True],
                     [False, False, True, True, True, False],
@@ -612,7 +622,12 @@ class TestLabeledDataBuilderTimeSeriesForecasting(TestCase):
         # Assert
         expected_labeled_data = pd.DataFrame(
             data={
-                "features": [[True, False, False], [False, False, True], [False, True, True]],
+                "features_individual": [[False, True, False], [True, False, True], [False, True, False]],
+                "features_sector": [
+                    [True, False, False, True, False, False],
+                    [False, True, False, False, True, True],
+                    [False, False, True, True, True, False],
+                ],
                 "label": [True, False, True],
             }
         )
