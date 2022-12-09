@@ -43,7 +43,7 @@ def correlation_analysis_single_combination(
     if data is None:
         data = YfinanceDataProvider.get_data(
             tickers=[ticker1, ticker2],
-            period=YfinancePeriod.TEN_YEARS,
+            period=YfinancePeriod.TWENTY_YEARS,
             interval=YfinanceInterval.ONE_DAY,
             group_by=YfinanceGroupBy.COLUMN,
         )
@@ -57,7 +57,7 @@ def correlation_analysis_single_combination(
     non_nan_rows = [i for i in range(len(data)) if not math.isnan(data_ticker1[i]) and not math.isnan(data_ticker2[i])]
     clean_data_ticker1 = [data_ticker1[i] for i in non_nan_rows]
     clean_data_ticker2 = [data_ticker2[i] for i in non_nan_rows]
-    return tuple(stats.pearsonr(clean_data_ticker1, clean_data_ticker2))
+    return tuple(stats.pearsonr(clean_data_ticker1, clean_data_ticker2) + ((len(clean_data_ticker1)),))
 
 
 def correlation_analysis_lists_cardinal_product(
@@ -77,7 +77,7 @@ def correlation_analysis_lists_cardinal_product(
     """
     data = YfinanceDataProvider.get_data(
         tickers=list_ticker1 + list_ticker2,
-        period=YfinancePeriod.TEN_YEARS,
+        period=YfinancePeriod.TWENTY_YEARS,
         interval=YfinanceInterval.ONE_DAY,
         group_by=YfinanceGroupBy.COLUMN,
     )
