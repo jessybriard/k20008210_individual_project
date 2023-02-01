@@ -6,8 +6,8 @@ import pandas as pd
 
 
 def generate_sample(data: pd.DataFrame) -> pd.DataFrame:
-    """Generate a new simulated sample from the given data. The generated sample has the same size as the original data
-    and each row is sampled with replacement.
+    """Generate a new simulated sample from the given data, using bootstrapping. The generated sample has the same size
+    as the original data and each row is sampled with replacement.
 
     Args:
         data (pd.DataFrame): The original data to sample from.

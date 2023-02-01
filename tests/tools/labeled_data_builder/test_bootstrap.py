@@ -5,11 +5,11 @@ from unittest import TestCase
 
 import pandas as pd
 
-from src.tools.labeled_data_builder.boostrap import generate_sample
+from src.tools.labeled_data_builder.bootstrap import generate_sample
 
 
 class TestLabeledDataBuilderBoostrap(TestCase):
-    """Test class for methods in labeled_data_builder/boostrap.py."""
+    """Test class for methods in labeled_data_builder/bootstrap.py."""
 
     # Tests for method generate_sample()
 
