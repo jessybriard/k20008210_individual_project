@@ -2,7 +2,7 @@
 
 from unittest import TestCase
 
-from src.tools.hypothesis_testing import lilliefors_test, one_sample_t_test
+from src.tools.hypothesis_testing import lilliefors_test, one_sample_t_test, two_sample_t_test
 
 
 class TestHypothesisTesting(TestCase):
@@ -56,17 +56,17 @@ class TestHypothesisTesting(TestCase):
 
     # Tests for method one_sample_t_test()
 
-    def test_one_sample_t_test_confidence_level_equals_zero(self):
+    def test_one_sample_t_test_confidence_level_equals_zero_five(self):
 
         # Arrange
         sample = [0.51, 0.52, 0.5, 0.49, 0.51]
         population_mean = 0.5
-        confidence_level = 0
+        confidence_level = 0.5
 
         # Act / Assert
         with self.assertRaises(ValueError) as e:
             one_sample_t_test(sample=sample, population_mean=population_mean, confidence_level=confidence_level)
-        self.assertEqual("Confidence level for T-test must be between 0 and 1 (exclusive).", str(e.exception))
+        self.assertEqual("Confidence level for T-test must be between 0.5 and 1 (exclusive).", str(e.exception))
 
     def test_one_sample_t_test_confidence_level_equals_one(self):
 
@@ -78,19 +78,19 @@ class TestHypothesisTesting(TestCase):
         # Act / Assert
         with self.assertRaises(ValueError) as e:
             one_sample_t_test(sample=sample, population_mean=population_mean, confidence_level=confidence_level)
-        self.assertEqual("Confidence level for T-test must be between 0 and 1 (exclusive).", str(e.exception))
+        self.assertEqual("Confidence level for T-test must be between 0.5 and 1 (exclusive).", str(e.exception))
 
-    def test_one_sample_t_test_confidence_level_less_than_zero(self):
+    def test_one_sample_t_test_confidence_level_less_than_zero_five(self):
 
         # Arrange
         sample = [0.51, 0.52, 0.5, 0.49, 0.51]
         population_mean = 0.5
-        confidence_level = -0.1
+        confidence_level = 0.49
 
         # Act / Assert
         with self.assertRaises(ValueError) as e:
             one_sample_t_test(sample=sample, population_mean=population_mean, confidence_level=confidence_level)
-        self.assertEqual("Confidence level for T-test must be between 0 and 1 (exclusive).", str(e.exception))
+        self.assertEqual("Confidence level for T-test must be between 0.5 and 1 (exclusive).", str(e.exception))
 
     def test_one_sample_t_test_confidence_level_greater_than_one(self):
 
@@ -102,7 +102,7 @@ class TestHypothesisTesting(TestCase):
         # Act / Assert
         with self.assertRaises(ValueError) as e:
             one_sample_t_test(sample=sample, population_mean=population_mean, confidence_level=confidence_level)
-        self.assertEqual("Confidence level for T-test must be between 0 and 1 (exclusive).", str(e.exception))
+        self.assertEqual("Confidence level for T-test must be between 0.5 and 1 (exclusive).", str(e.exception))
 
     def test_one_sample_t_test_sample_is_empty(self):
 
@@ -163,3 +163,153 @@ class TestHypothesisTesting(TestCase):
         # Assert
         self.assertTrue(rejected_null_hypothesis)
         self.assertAlmostEqual(6.257997e-09, p_value)
+
+    # Tests for method two_sample_t_test()
+
+    def test_two_sample_t_test_confidence_level_equals_zero_five(self):
+
+        # Arrange
+        sample_1 = [0.51, 0.5, 0.49, 0.51, 0.51, 0.5]
+        sample_2 = [0.52, 0.52, 0.51, 0.53, 0.52, 0.5, 0.51, 0.525, 0.505, 0.52]
+        confidence_level = 0.5
+
+        # Act / Assert
+        with self.assertRaises(ValueError) as e:
+            two_sample_t_test(sample_1=sample_1, sample_2=sample_2, confidence_level=confidence_level)
+        self.assertEqual("Confidence level for T-test must be between 0.5 and 1 (exclusive).", str(e.exception))
+
+    def test_two_sample_t_test_confidence_level_equals_one(self):
+
+        # Arrange
+        sample_1 = [0.51, 0.5, 0.49, 0.51, 0.51, 0.5]
+        sample_2 = [0.52, 0.52, 0.51, 0.53, 0.52, 0.5, 0.51, 0.525, 0.505, 0.52]
+        confidence_level = 1
+
+        # Act / Assert
+        with self.assertRaises(ValueError) as e:
+            two_sample_t_test(sample_1=sample_1, sample_2=sample_2, confidence_level=confidence_level)
+        self.assertEqual("Confidence level for T-test must be between 0.5 and 1 (exclusive).", str(e.exception))
+
+    def test_two_sample_t_test_confidence_level_less_than_zero_five(self):
+
+        # Arrange
+        sample_1 = [0.51, 0.5, 0.49, 0.51, 0.51, 0.5]
+        sample_2 = [0.52, 0.52, 0.51, 0.53, 0.52, 0.5, 0.51, 0.525, 0.505, 0.52]
+        confidence_level = 0.49
+
+        # Act / Assert
+        with self.assertRaises(ValueError) as e:
+            two_sample_t_test(sample_1=sample_1, sample_2=sample_2, confidence_level=confidence_level)
+        self.assertEqual("Confidence level for T-test must be between 0.5 and 1 (exclusive).", str(e.exception))
+
+    def test_two_sample_t_test_confidence_level_greater_than_one(self):
+
+        # Arrange
+        sample_1 = [0.51, 0.5, 0.49, 0.51, 0.51, 0.5]
+        sample_2 = [0.52, 0.52, 0.51, 0.53, 0.52, 0.5, 0.51, 0.525, 0.505, 0.52]
+        confidence_level = 1.1
+
+        # Act / Assert
+        with self.assertRaises(ValueError) as e:
+            two_sample_t_test(sample_1=sample_1, sample_2=sample_2, confidence_level=confidence_level)
+        self.assertEqual("Confidence level for T-test must be between 0.5 and 1 (exclusive).", str(e.exception))
+
+    def test_two_sample_t_test_sample_one_is_empty(self):
+
+        # Arrange
+        sample_1 = []
+        sample_2 = [0.52, 0.52, 0.51, 0.53, 0.52, 0.5, 0.51, 0.525, 0.505, 0.52]
+        confidence_level = 0.95
+
+        # Act / Assert
+        with self.assertRaises(ValueError) as e:
+            two_sample_t_test(sample_1=sample_1, sample_2=sample_2, confidence_level=confidence_level)
+        self.assertEqual("Samples passed to two-sample T-test must not be empty.", str(e.exception))
+
+    def test_two_sample_t_test_sample_two_is_empty(self):
+
+        # Arrange
+        sample_1 = [0.51, 0.5, 0.49, 0.51, 0.51, 0.5]
+        sample_2 = []
+        confidence_level = 0.95
+
+        # Act / Assert
+        with self.assertRaises(ValueError) as e:
+            two_sample_t_test(sample_1=sample_1, sample_2=sample_2, confidence_level=confidence_level)
+        self.assertEqual("Samples passed to two-sample T-test must not be empty.", str(e.exception))
+
+    def test_two_sample_t_test_both_samples_are_empty(self):
+
+        # Arrange
+        sample_1 = []
+        sample_2 = []
+        confidence_level = 0.95
+
+        # Act / Assert
+        with self.assertRaises(ValueError) as e:
+            two_sample_t_test(sample_1=sample_1, sample_2=sample_2, confidence_level=confidence_level)
+        self.assertEqual("Samples passed to two-sample T-test must not be empty.", str(e.exception))
+
+    def test_two_sample_t_test_standard_derivations_are_zero_and_means_are_equal(self):
+
+        # Arrange
+        sample_1 = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+        sample_2 = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+        confidence_level = 0.95
+
+        # Act
+        rejected_null_hypothesis, p_value = two_sample_t_test(
+            sample_1=sample_1, sample_2=sample_2, confidence_level=confidence_level
+        )
+
+        # Assert
+        self.assertFalse(rejected_null_hypothesis)
+        self.assertEqual(0.5, p_value)
+
+    def test_two_sample_t_test_standard_derivations_are_zero_and_means_are_not_equal(self):
+
+        # Arrange
+        sample_1 = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+        sample_2 = [0.51, 0.51, 0.51, 0.51, 0.51, 0.51, 0.51, 0.51, 0.51, 0.51]
+        confidence_level = 0.95
+
+        # Act
+        rejected_null_hypothesis, p_value = two_sample_t_test(
+            sample_1=sample_1, sample_2=sample_2, confidence_level=confidence_level
+        )
+
+        # Assert
+        self.assertTrue(rejected_null_hypothesis)
+        self.assertEqual(0, p_value)
+
+    def test_two_sample_t_test_does_not_reject_null_hypothesis(self):
+
+        # Arrange
+        sample_1 = [0.51, 0.5, 0.49, 0.51, 0.51, 0.5]
+        sample_2 = [0.51, 0.51, 0.505, 0.52, 0.5, 0.5, 0.51, 0.525, 0.505, 0.52]
+        confidence_level = 0.95
+
+        # Act
+        rejected_null_hypothesis, p_value = two_sample_t_test(
+            sample_1=sample_1, sample_2=sample_2, confidence_level=confidence_level
+        )
+
+        # Assert
+        self.assertFalse(rejected_null_hypothesis)
+        self.assertAlmostEqual(0.4373026067, p_value)
+
+    def test_two_sample_t_test_rejects_null_hypothesis(self):
+
+        # Arrange
+        sample_1 = [0.51, 0.5, 0.49] * 100
+        sample_2 = [0.52, 0.52, 0.51, 0.53] * 100
+        confidence_level = 0.95
+
+        # Act
+        rejected_null_hypothesis, p_value = two_sample_t_test(
+            sample_1=sample_1, sample_2=sample_2, confidence_level=confidence_level
+        )
+
+        # Assert
+        self.assertTrue(rejected_null_hypothesis)
+        self.assertAlmostEqual(0.001418196, p_value)
