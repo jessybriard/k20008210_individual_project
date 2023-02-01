@@ -13,6 +13,7 @@ class TestLabeledDataBuilderSplitTrainTest(TestCase):
     # Tests for method split_time_series_forecasting()
 
     def test_split_time_series_forecasting_labeled_data_no_row(self):
+
         # Arrange
         data = pd.DataFrame(columns=["features", "labels"])
         train_percentage = 0.8
@@ -27,6 +28,7 @@ class TestLabeledDataBuilderSplitTrainTest(TestCase):
         self.assertTrue(expected_test_data.equals(test_data))
 
     def test_split_time_series_forecasting_train_percentage_between_zero_and_one(self):
+
         # Arrange
         data = pd.DataFrame(
             data={
@@ -56,6 +58,7 @@ class TestLabeledDataBuilderSplitTrainTest(TestCase):
         self.assertTrue(expected_test_data.equals(test_data.reset_index(drop=True)))
 
     def test_split_time_series_forecasting_train_percentage_zero(self):
+
         # Arrange
         data = pd.DataFrame(
             data={
@@ -74,6 +77,7 @@ class TestLabeledDataBuilderSplitTrainTest(TestCase):
         self.assertTrue(data.equals(test_data))
 
     def test_split_time_series_forecasting_train_percentage_one(self):
+
         # Arrange
         data = pd.DataFrame(
             data={
@@ -92,6 +96,7 @@ class TestLabeledDataBuilderSplitTrainTest(TestCase):
         self.assertEqual(["features", "label"], list(test_data.columns))
 
     def test_split_time_series_forecasting_train_percentage_under_zero(self):
+
         # Arrange
         data = pd.DataFrame(
             data={
@@ -107,6 +112,7 @@ class TestLabeledDataBuilderSplitTrainTest(TestCase):
         self.assertEqual(str(e.exception), "Parameter 'train_percentage' must be a number between 0 and 1 inclusive.")
 
     def test_split_time_series_forecasting_train_percentage_over_one(self):
+
         # Arrange
         data = pd.DataFrame(
             data={
@@ -122,6 +128,7 @@ class TestLabeledDataBuilderSplitTrainTest(TestCase):
         self.assertEqual(str(e.exception), "Parameter 'train_percentage' must be a number between 0 and 1 inclusive.")
 
     def test_split_time_series_forecasting_non_arbitrary_index(self):
+
         # Arrange
         open_series = pd.Series(
             data={
