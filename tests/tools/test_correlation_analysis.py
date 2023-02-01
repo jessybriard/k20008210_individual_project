@@ -403,8 +403,8 @@ class TestCorrelationAnalysis(TestCase):
         # Assert
         get_data_parameters_expected = {
             "tickers": ["CL=F", "EUR=X"],
-            "period": YfinancePeriod.TWENTY_YEARS,
-            "interval": YfinanceInterval.ONE_DAY,
+            "period": YfinancePeriod.SEVEN_HUNDRED_THIRTY_DAYS,
+            "interval": YfinanceInterval.ONE_HOUR,
             "group_by": YfinanceGroupBy.COLUMN,
         }
         self.assertEqual(self.get_data_parameters, get_data_parameters_expected)
@@ -427,8 +427,8 @@ class TestCorrelationAnalysis(TestCase):
         # Assert
         get_data_parameters_expected = {
             "tickers": ["CL=F", "EUR=X"],
-            "period": YfinancePeriod.TWENTY_YEARS,
-            "interval": YfinanceInterval.ONE_DAY,
+            "period": YfinancePeriod.SEVEN_HUNDRED_THIRTY_DAYS,
+            "interval": YfinanceInterval.ONE_HOUR,
             "group_by": YfinanceGroupBy.COLUMN,
         }
         self.assertEqual(self.get_data_parameters, get_data_parameters_expected)

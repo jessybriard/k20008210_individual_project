@@ -44,61 +44,33 @@ class YfinanceDataProvider:
             group_by = group_by.value
 
         # Invalid request to yf.download() will return a pandas DataFrame with named columns but empty values (no rows).
-        data = yf.download(tickers=tickers, period=period, interval=interval, group_by=group_by, progress=False)
+        data = yf.download(
+            tickers=tickers, period=period, interval=interval, group_by=group_by, ignore_tz=False, progress=False
+        )
 
         return data
 
     @staticmethod
-    def get_daily_close_prices(
+    def get_hourly_returns(
         tickers: Union[str, List[str]],
-        period: Union[YfinancePeriod, str] = YfinancePeriod.MAX,
+        period: Union[YfinancePeriod, str] = YfinancePeriod.SEVEN_HUNDRED_THIRTY_DAYS,
     ) -> pd.DataFrame:
-        """Get historical daily Close prices for tickers, from Yahoo Finance.
+        """Get historical hourly Open and Close prices for tickers, from Yahoo Finance, and calculate hourly returns.
 
         Args:
-            tickers (Union[str, List[str]]): The ticker for the asset(s) to retrieve daily historical Close prices for.
-            period (Union[YfinancePeriod, str]): The period of the time series.
-
-        Returns:
-            close_data (pd.DataFrame): The historical Close prices time series.
-
-        """
-
-        raw_data = YfinanceDataProvider.get_data(
-            tickers=tickers,
-            period=period,
-            interval=YfinanceInterval.ONE_DAY,
-            group_by=YfinanceGroupBy.COLUMN,
-        )
-        close_data = raw_data["Close"]
-        if isinstance(close_data, pd.Series):
-            ticker = tickers
-            if isinstance(tickers, list):
-                ticker = tickers[0]
-            close_data = pd.DataFrame(data={ticker: close_data})
-        return close_data
-
-    @staticmethod
-    def get_daily_returns(
-        tickers: Union[str, List[str]],
-        period: Union[YfinancePeriod, str] = YfinancePeriod.MAX,
-    ) -> pd.DataFrame:
-        """Get historical daily Open and Close prices for tickers, from Yahoo Finance, and calculate daily returns.
-
-        Args:
-            tickers (Union[str, List[str]]): The ticker for the asset(s) to retrieve daily historical Open and Close
+            tickers (Union[str, List[str]]): The ticker for the asset(s) to retrieve hourly historical Open and Close
                 prices for.
             period (Union[YfinancePeriod, str]): The period of the time series.
 
         Returns:
-            returns_data (pd.DataFrame): The calculated daily returns time series.
+            returns_data (pd.DataFrame): The calculated hourly returns time series.
 
         """
 
         data = YfinanceDataProvider.get_data(
             tickers=tickers,
             period=period,
-            interval=YfinanceInterval.ONE_DAY,
+            interval=YfinanceInterval.ONE_HOUR,
             group_by=YfinanceGroupBy.TICKER,
         )
 

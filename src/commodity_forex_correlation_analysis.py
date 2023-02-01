@@ -11,7 +11,34 @@ if __name__ == "__main__":
     forex_list: List of arbitrary foreign exchange tickers, to analyse their correlation with commodity tickers.
     """
 
-    commodity_list = ["CL=F", "BZ=F", "PL=F", "GC=F", "SI=F", "HG=F", "PA=F", "NG=F"]
+    commodity_list = [
+        "CL=F",
+        "BZ=F",
+        "PL=F",
+        "GC=F",
+        "SI=F",
+        "HG=F",
+        "PA=F",
+        "NG=F",
+        "HO=F",
+        "RB=F",
+        "ZC=F",
+        "ZO=F",
+        "KE=F",
+        "ZR=F",
+        "ZM=F",
+        "ZL=F",
+        "ZS=F",
+        "GF=F",
+        "HE=F",
+        "LE=F",
+        "CC=F",
+        "KC=F",
+        "CT=F",
+        "LBS=F",
+        "OJ=F",
+        "SB=F",
+    ]
     forex_list = [
         "AUDCAD=X",
         "AUDCHF=X",
@@ -34,8 +61,20 @@ if __name__ == "__main__":
         "USDCAD=X",
         "USDCHF=X",
         "USDJPY=X",
+        "EURHUF=X",
+        "USDCNY=X",
+        "USDHKD=X",
+        "USDSGD=X",
+        "USDINR=X",
+        "USDMXN=X",
+        "USDPHP=X",
+        "USDIDR=X",
+        "USDTHB=X",
+        "USDMYR=X",
+        "USDZAR=X",
+        "USDRUB=X",
     ]
-    columns = [("Close", "Close", 0.7), ("Volume", "Close", 0.5)]
+    columns = [("Close", "Close", 0.7), ("Volume", "Close", 0.1)]
 
     for column_commodity, column_forex, correlation_threshold in columns:
         print(f"\n{column_commodity} -> {column_forex}\n")

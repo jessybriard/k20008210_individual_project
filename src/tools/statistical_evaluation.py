@@ -25,7 +25,9 @@ class ClassificationEvaluation:
         self._validate_predictions_length(y_true=y_true, y_predicted=y_predicted)
         self.y_true = y_true
         self.y_predicted = y_predicted
-        self.classification_report = metrics.classification_report(y_true=y_true, y_pred=y_predicted, output_dict=True)
+        self.classification_report = metrics.classification_report(
+            y_true=y_true, y_pred=y_predicted, output_dict=True, zero_division=0
+        )
         self._extract_scores_from_classification_report()
 
     @staticmethod
