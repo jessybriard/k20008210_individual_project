@@ -1,7 +1,10 @@
 """Methods to conduct statistical hypothesis testing on observed data."""
 
+from math import sqrt
 from typing import List, Tuple
 
+import numpy as np
+from scipy.stats import norm
 from statsmodels.stats.diagnostic import lilliefors
 
 
@@ -19,7 +22,44 @@ def lilliefors_test(data: List[float]) -> Tuple[bool, float]:
         p_value (float): The p-value calculated through the Lilliefors test for this data.
 
     """
+
     if not data:
         raise ValueError("Data passed to Lilliefors test is empty.")
+
     ksstat, p_value = lilliefors(x=data, dist="norm")
     return p_value >= 0.05, p_value
+
+
+def one_sample_t_test(
+    sample: List[float], population_mean: float, confidence_level: float = 0.95
+) -> Tuple[bool, float]:
+    """Conduct a right-tailed one-sample T-test to determine if the difference between the mean of a sample and the
+    theoretical mean of a population is statistically significant, where mean(sample) > population_mean. This is an
+    instance of hypothesis testing where the null hypothesis is that the observed sample is not significantly different
+    from the population. This test assumes that the sample and population come from Gaussian (normal) distributions. If
+    the calculated p_value is lower than (1 - confidence_level), then we can reject the null hypothesis and determine
+    that the observed sample is significantly different from the population.
+
+    Args:
+        sample (List[float]): The observed sample to test.
+        population_mean (float): The theoretical mean of the population.
+        confidence_level (float): The confidence level of the T-test.
+
+    Returns:
+        rejected_null_hypothesis (bool): True if the null hypothesis is rejected (p_value < (1 - confidence_level)).
+        p_value (float): The p-value calculated through this one-sample T-test.
+
+    """
+
+    if not 0 < confidence_level < 1:
+        raise ValueError("Confidence level for T-test must be between 0 and 1 (exclusive).")
+
+    if not sample:
+        raise ValueError("Sample passed to one-sample T-test is empty.")
+
+    if len(set(sample)) == 1:  # Standard deviation is zero, we reject the null hypothesis
+        return True, 0
+
+    t_value = (np.mean(sample) - population_mean) / (np.std(sample) / sqrt(len(sample)))
+    p_value = 1 - norm.cdf(t_value)
+    return p_value < 1 - confidence_level, p_value

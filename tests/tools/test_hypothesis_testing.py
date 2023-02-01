@@ -2,7 +2,7 @@
 
 from unittest import TestCase
 
-from src.tools.hypothesis_testing import lilliefors_test
+from src.tools.hypothesis_testing import lilliefors_test, one_sample_t_test
 
 
 class TestHypothesisTesting(TestCase):
@@ -53,3 +53,113 @@ class TestHypothesisTesting(TestCase):
         # Assert
         self.assertTrue(normal_distribution)
         self.assertTrue(p_value >= 0.05)
+
+    # Tests for method one_sample_t_test()
+
+    def test_one_sample_t_test_confidence_level_equals_zero(self):
+
+        # Arrange
+        sample = [0.51, 0.52, 0.5, 0.49, 0.51]
+        population_mean = 0.5
+        confidence_level = 0
+
+        # Act / Assert
+        with self.assertRaises(ValueError) as e:
+            one_sample_t_test(sample=sample, population_mean=population_mean, confidence_level=confidence_level)
+        self.assertEqual("Confidence level for T-test must be between 0 and 1 (exclusive).", str(e.exception))
+
+    def test_one_sample_t_test_confidence_level_equals_one(self):
+
+        # Arrange
+        sample = [0.51, 0.52, 0.5, 0.49, 0.51]
+        population_mean = 0.5
+        confidence_level = 1
+
+        # Act / Assert
+        with self.assertRaises(ValueError) as e:
+            one_sample_t_test(sample=sample, population_mean=population_mean, confidence_level=confidence_level)
+        self.assertEqual("Confidence level for T-test must be between 0 and 1 (exclusive).", str(e.exception))
+
+    def test_one_sample_t_test_confidence_level_less_than_zero(self):
+
+        # Arrange
+        sample = [0.51, 0.52, 0.5, 0.49, 0.51]
+        population_mean = 0.5
+        confidence_level = -0.1
+
+        # Act / Assert
+        with self.assertRaises(ValueError) as e:
+            one_sample_t_test(sample=sample, population_mean=population_mean, confidence_level=confidence_level)
+        self.assertEqual("Confidence level for T-test must be between 0 and 1 (exclusive).", str(e.exception))
+
+    def test_one_sample_t_test_confidence_level_greater_than_one(self):
+
+        # Arrange
+        sample = [0.51, 0.52, 0.5, 0.49, 0.51]
+        population_mean = 0.5
+        confidence_level = 1.1
+
+        # Act / Assert
+        with self.assertRaises(ValueError) as e:
+            one_sample_t_test(sample=sample, population_mean=population_mean, confidence_level=confidence_level)
+        self.assertEqual("Confidence level for T-test must be between 0 and 1 (exclusive).", str(e.exception))
+
+    def test_one_sample_t_test_sample_is_empty(self):
+
+        # Arrange
+        sample = []
+        population_mean = 0.5
+        confidence_level = 0.95
+
+        # Act / Assert
+        with self.assertRaises(ValueError) as e:
+            one_sample_t_test(sample=sample, population_mean=population_mean, confidence_level=confidence_level)
+        self.assertEqual("Sample passed to one-sample T-test is empty.", str(e.exception))
+
+    def test_one_sample_t_test_standard_deviation_is_zero(self):
+
+        # Arrange
+        sample = [0.51, 0.51, 0.51, 0.51, 0.51, 0.51]
+        population_mean = 0.5
+        confidence_level = 0.95
+
+        # Act
+        rejected_null_hypothesis, p_value = one_sample_t_test(
+            sample=sample, population_mean=population_mean, confidence_level=confidence_level
+        )
+
+        # Assert
+        self.assertTrue(rejected_null_hypothesis)
+        self.assertEqual(0, p_value)
+
+    def test_one_sample_t_test_does_not_reject_null_hypothesis(self):
+
+        # Arrange
+        sample = [0.51, 0.5, 0.49, 0.51, 0.51, 0.5]
+        population_mean = 0.5
+        confidence_level = 0.95
+
+        # Act
+        rejected_null_hypothesis, p_value = one_sample_t_test(
+            sample=sample, population_mean=population_mean, confidence_level=confidence_level
+        )
+
+        # Assert
+        self.assertFalse(rejected_null_hypothesis)
+        self.assertAlmostEqual(0.136660839, p_value)
+
+    def test_one_sample_t_test_rejects_null_hypothesis(self):
+
+        # Arrange
+        sample = [0.52, 0.52, 0.51, 0.53, 0.52, 0.5, 0.51, 0.525, 0.505, 0.52]
+        population_mean = 0.5
+        confidence_level = 0.95
+
+        # Act
+        rejected_null_hypothesis, p_value = one_sample_t_test(
+            sample=sample, population_mean=population_mean, confidence_level=confidence_level
+        )
+
+        # Assert
+        self.assertTrue(rejected_null_hypothesis)
+        self.assertAlmostEqual(6.257997e-09, p_value)
