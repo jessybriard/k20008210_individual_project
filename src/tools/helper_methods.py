@@ -13,7 +13,7 @@ def extract_returns_from_dataframe(data: pd.DataFrame) -> pd.Series:
         data (pd.DataFrame): The pandas DataFrame containing columns 'Open' and 'Close' columns.
 
     Returns:
-        returns_series (pd.Series): The returns, extracted from the DataFrame.
+        returns_series (pd.Series): The returns (continuous values), extracted from the DataFrame.
 
     """
 
@@ -25,6 +25,6 @@ def extract_returns_from_dataframe(data: pd.DataFrame) -> pd.Series:
     def daily_return_value(row: pd.Series) -> Union[bool, float]:
         if math.isnan(row["Open"]) or math.isnan(row["Close"]):
             return math.nan
-        return row["Close"] > row["Open"]
+        return (row["Close"] - row["Open"]) / row["Open"]
 
     return data.apply(lambda row: daily_return_value(row), axis=1)

@@ -1,4 +1,4 @@
-"""Tests for methods in file helper_methods.py."""
+"""Tests for methods in file balance_data.py."""
 
 import math
 from unittest import TestCase
@@ -9,7 +9,7 @@ from src.tools.helper_methods import extract_returns_from_dataframe
 
 
 class TestHelperMethods(TestCase):
-    """Test class for methods in file helper_methods.py."""
+    """Test class for methods in file balance_data.py."""
 
     # Tests for method extract_returns_from_dataframe()
 
@@ -30,7 +30,7 @@ class TestHelperMethods(TestCase):
         returns_series = extract_returns_from_dataframe(data=data)
 
         # Assert
-        expected_returns_series = pd.Series(data={"2022-11-03": False, "2022-11-04": True, "2022-11-07": False})
+        expected_returns_series = pd.Series(data={"2022-11-03": -1 / 89, "2022-11-04": 4 / 88, "2022-11-07": 0.0})
         expected_returns_series.index = pd.DatetimeIndex(expected_returns_series.index, name="Date")
         self.assertTrue(expected_returns_series.equals(returns_series))
 
@@ -53,9 +53,9 @@ class TestHelperMethods(TestCase):
         # Assert
         expected_returns_series = pd.Series(
             data={
-                "2022-11-03": False,
+                "2022-11-03": -1 / 89,
                 "2022-11-04": math.nan,
-                "2022-11-07": False,
+                "2022-11-07": 0.0,
             }
         )
         expected_returns_series.index = pd.DatetimeIndex(expected_returns_series.index, name="Date")
@@ -80,8 +80,8 @@ class TestHelperMethods(TestCase):
         # Assert
         expected_returns_series = pd.Series(
             data={
-                "2022-11-03": False,
-                "2022-11-04": True,
+                "2022-11-03": -1 / 89,
+                "2022-11-04": 4 / 88,
                 "2022-11-07": math.nan,
             }
         )

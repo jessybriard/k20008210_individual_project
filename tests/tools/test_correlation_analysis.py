@@ -403,8 +403,8 @@ class TestCorrelationAnalysis(TestCase):
         # Assert
         get_data_parameters_expected = {
             "tickers": ["CL=F", "EUR=X"],
-            "period": YfinancePeriod.TEN_YEARS,
-            "interval": YfinanceInterval.ONE_DAY,
+            "period": YfinancePeriod.SEVEN_HUNDRED_THIRTY_DAYS,
+            "interval": YfinanceInterval.ONE_HOUR,
             "group_by": YfinanceGroupBy.COLUMN,
         }
         self.assertEqual(self.get_data_parameters, get_data_parameters_expected)
@@ -427,8 +427,8 @@ class TestCorrelationAnalysis(TestCase):
         # Assert
         get_data_parameters_expected = {
             "tickers": ["CL=F", "EUR=X"],
-            "period": YfinancePeriod.TEN_YEARS,
-            "interval": YfinanceInterval.ONE_DAY,
+            "period": YfinancePeriod.SEVEN_HUNDRED_THIRTY_DAYS,
+            "interval": YfinanceInterval.ONE_HOUR,
             "group_by": YfinanceGroupBy.COLUMN,
         }
         self.assertEqual(self.get_data_parameters, get_data_parameters_expected)
@@ -594,11 +594,13 @@ class TestCorrelationAnalysis(TestCase):
 
         # Assert
         self.assertIsInstance(returned_value, tuple)
-        self.assertEqual(2, len(returned_value))
+        self.assertEqual(3, len(returned_value))
         pearson_corr_coef = returned_value[0]
         self.assertTrue(-1 <= pearson_corr_coef <= 1)
         p_value = returned_value[1]
         self.assertTrue(0 <= p_value <= 1)
+        data_length = returned_value[2]
+        self.assertEqual(6, data_length)
 
     # Tests for method correlation_analysis_lists_cardinal_product()
 
@@ -677,12 +679,13 @@ class TestCorrelationAnalysis(TestCase):
         self.assertEqual(combinations_expected, set(correlations.keys()))
         for correlation in correlations.values():
             self.assertIsInstance(correlation, tuple)
-            self.assertEqual(2, len(correlation))
-            pearson_corr_coef, p_value = correlation
+            self.assertEqual(3, len(correlation))
+            pearson_corr_coef, p_value, data_length = correlation
             self.assertIsInstance(pearson_corr_coef, float)
             self.assertTrue(-1 <= pearson_corr_coef <= 1)
             self.assertIsInstance(p_value, float)
             self.assertTrue(0 <= p_value <= 1)
+            self.assertEqual(2513, data_length)
 
     @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
     def test_correlation_analysis_lists_cardinal_product_list_ticker1_length_one(self, mock_get_data_method):
@@ -707,14 +710,18 @@ class TestCorrelationAnalysis(TestCase):
         self.assertEqual(3, len(correlations))
         combinations_expected = {("CL=F", "EUR=X"), ("CL=F", "CADUSD=X"), ("CL=F", "GBP=X")}
         self.assertEqual(combinations_expected, set(correlations.keys()))
-        for correlation in correlations.values():
+        expected_data_length = [2513, 2513, 2514]
+        correlation_values = list(correlations.values())
+        for i in range(len(correlation_values)):
+            correlation = correlation_values[i]
             self.assertIsInstance(correlation, tuple)
-            self.assertEqual(2, len(correlation))
-            pearson_corr_coef, p_value = correlation
+            self.assertEqual(3, len(correlation))
+            pearson_corr_coef, p_value, data_length = correlation
             self.assertIsInstance(pearson_corr_coef, float)
             self.assertTrue(-1 <= pearson_corr_coef <= 1)
             self.assertIsInstance(p_value, float)
             self.assertTrue(0 <= p_value <= 1)
+            self.assertEqual(expected_data_length[i], data_length)
 
     @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
     def test_correlation_analysis_lists_cardinal_product_list_ticker2_length_one(self, mock_get_data_method):
@@ -739,14 +746,18 @@ class TestCorrelationAnalysis(TestCase):
         self.assertEqual(2, len(correlations))
         combinations_expected = {("CL=F", "EUR=X"), ("GC=F", "EUR=X")}
         self.assertEqual(combinations_expected, set(correlations.keys()))
-        for correlation in correlations.values():
+        expected_data_length = [2513, 2511]
+        correlation_values = list(correlations.values())
+        for i in range(len(correlation_values)):
+            correlation = correlation_values[i]
             self.assertIsInstance(correlation, tuple)
-            self.assertEqual(2, len(correlation))
-            pearson_corr_coef, p_value = correlation
+            self.assertEqual(3, len(correlation))
+            pearson_corr_coef, p_value, data_length = correlation
             self.assertIsInstance(pearson_corr_coef, float)
             self.assertTrue(-1 <= pearson_corr_coef <= 1)
             self.assertIsInstance(p_value, float)
             self.assertTrue(0 <= p_value <= 1)
+            self.assertEqual(expected_data_length[i], data_length)
 
     @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
     def test_correlation_analysis_lists_cardinal_product_list_ticker1_list_ticker2_length_over_one(
@@ -780,14 +791,18 @@ class TestCorrelationAnalysis(TestCase):
             ("GC=F", "GBP=X"),
         }
         self.assertEqual(combinations_expected, set(correlations.keys()))
-        for correlation in correlations.values():
+        expected_data_length = [2513, 2513, 2514, 2511, 2511, 2512]
+        correlation_values = list(correlations.values())
+        for i in range(len(correlation_values)):
+            correlation = correlation_values[i]
             self.assertIsInstance(correlation, tuple)
-            self.assertEqual(2, len(correlation))
-            pearson_corr_coef, p_value = correlation
+            self.assertEqual(3, len(correlation))
+            pearson_corr_coef, p_value, data_length = correlation
             self.assertIsInstance(pearson_corr_coef, float)
             self.assertTrue(-1 <= pearson_corr_coef <= 1)
             self.assertIsInstance(p_value, float)
             self.assertTrue(0 <= p_value <= 1)
+            self.assertEqual(expected_data_length[i], data_length)
 
     @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
     def test_correlation_analysis_lists_cardinal_product_column_ticker1_not_in_data(self, mock_get_data_method):

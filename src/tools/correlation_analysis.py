@@ -29,7 +29,7 @@ def correlation_analysis_single_combination(
         column_ticker1 (str): The attribute to use as data for ticker1 (the column of the 'data' DataFrame).
         column_ticker2 (str): The attribute to use as data for ticker2 (the column of the 'data' DataFrame).
         data (Union[None, pd.DataFrame]): The DataFrame containing the historical data for the tickers ; if not
-            provided, download 10 years of past daily historical data for the tickers.
+            provided, download 730 days of past hourly historical data for the tickers.
 
     Returns:
         pearson_corr_coef (float): The Pearson correlation coefficient (or "Pearson's r") between the two datasets.
@@ -43,8 +43,8 @@ def correlation_analysis_single_combination(
     if data is None:
         data = YfinanceDataProvider.get_data(
             tickers=[ticker1, ticker2],
-            period=YfinancePeriod.TEN_YEARS,
-            interval=YfinanceInterval.ONE_DAY,
+            period=YfinancePeriod.SEVEN_HUNDRED_THIRTY_DAYS,
+            interval=YfinanceInterval.ONE_HOUR,
             group_by=YfinanceGroupBy.COLUMN,
         )
     attribute_columns = {attribute for attribute, ticker in data.columns}
@@ -57,7 +57,7 @@ def correlation_analysis_single_combination(
     non_nan_rows = [i for i in range(len(data)) if not math.isnan(data_ticker1[i]) and not math.isnan(data_ticker2[i])]
     clean_data_ticker1 = [data_ticker1[i] for i in non_nan_rows]
     clean_data_ticker2 = [data_ticker2[i] for i in non_nan_rows]
-    return tuple(stats.pearsonr(clean_data_ticker1, clean_data_ticker2))
+    return tuple(stats.pearsonr(clean_data_ticker1, clean_data_ticker2) + ((len(clean_data_ticker1)),))
 
 
 def correlation_analysis_lists_cardinal_product(
@@ -77,8 +77,8 @@ def correlation_analysis_lists_cardinal_product(
     """
     data = YfinanceDataProvider.get_data(
         tickers=list_ticker1 + list_ticker2,
-        period=YfinancePeriod.TEN_YEARS,
-        interval=YfinanceInterval.ONE_DAY,
+        period=YfinancePeriod.SEVEN_HUNDRED_THIRTY_DAYS,
+        interval=YfinanceInterval.ONE_HOUR,
         group_by=YfinanceGroupBy.COLUMN,
     )
     combinations = list(product(list_ticker1, list_ticker2))

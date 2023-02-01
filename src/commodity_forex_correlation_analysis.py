@@ -14,55 +14,67 @@ if __name__ == "__main__":
     commodity_list = [
         "CL=F",
         "BZ=F",
-        "GC=F",
-        "NG=F",
-        "SI=F",
-        "ZW=F",
-        "KE=F",
-        "ZS=F",
-        "ZL=F",
-        "ZM=F",
-        "HE=F",
         "PL=F",
+        "GC=F",
+        "SI=F",
         "HG=F",
-        "ZC=F",
-        "ALI=F",
-        "SB=F",
-        "CT=F",
-        "KC=F",
-        "CC=F",
         "PA=F",
+        "NG=F",
+        "HO=F",
         "RB=F",
+        "ZC=F",
+        "ZO=F",
+        "KE=F",
+        "ZR=F",
+        "ZM=F",
+        "ZL=F",
+        "ZS=F",
         "GF=F",
+        "HE=F",
+        "LE=F",
+        "CC=F",
+        "KC=F",
+        "CT=F",
+        "LBS=F",
+        "OJ=F",
+        "SB=F",
     ]
     forex_list = [
-        "EUR=X",
-        "GBP=X",
-        "CADUSD=X",
-        "AUD=X",
-        "CHF=X",
-        "JPY=X",
-        "NZD=X",
+        "AUDCAD=X",
+        "AUDCHF=X",
+        "AUDJPY=X",
+        "AUDUSD=X",
+        "CADCHF=X",
         "CADJPY=X",
+        "CHFJPY=X",
+        "EURAUD=X",
+        "EURCAD=X",
+        "EURCHF=X",
         "EURGBP=X",
         "EURJPY=X",
-        "EURCHF=X",
-        "HKD=X",
-        "RUB=X",
-        "EURCAD=X",
+        "EURUSD=X",
+        "GBPAUD=X",
+        "GBPCAD=X",
+        "GBPCHF=X",
         "GBPJPY=X",
-        "EURAUD=X",
-        "EURNZD=X",
+        "GBPUSD=X",
+        "USDCAD=X",
+        "USDCHF=X",
+        "USDJPY=X",
+        "EURHUF=X",
+        "USDCNY=X",
+        "USDHKD=X",
+        "USDSGD=X",
+        "USDINR=X",
+        "USDMXN=X",
+        "USDPHP=X",
+        "USDIDR=X",
+        "USDTHB=X",
+        "USDMYR=X",
+        "USDZAR=X",
+        "USDRUB=X",
     ]
-
-    # List of tuples: (column_commodity, column_forex, correlation_threshold)
-    columns = [
-        ("Close", "Close", 0.6),
-        ("Open", "Open", 0.6),
-        ("High", "High", 0.6),
-        ("Low", "Low", 0.6),
-        ("Volume", "Close", 0.5),
-    ]
+    columns = [("Close", "Close", 0.7), ("Volume", "Close", 0.1)]
 
     for column_commodity, column_forex, correlation_threshold in columns:
         print(f"\n{column_commodity} -> {column_forex}\n")
@@ -80,4 +92,7 @@ if __name__ == "__main__":
             for combination, correlation in sorted(correlations.items(), key=lambda item: -abs(item[1][0]))
             if abs(correlation[0]) > correlation_threshold
         }.items():
-            print(f"{combination[0]} -> {combination[1]} : ({correlation[0]}, {correlation[1]})")
+            print(
+                f"{combination[0]} -> {combination[1]} : ({correlation[0]}, {correlation[1]}), "
+                f"data length: {correlation[2]}"
+            )

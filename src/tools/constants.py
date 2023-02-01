@@ -14,6 +14,7 @@ class YfinancePeriod(Enum):
     ONE_YEAR = "1y"
     FIVE_YEARS = "5y"
     TEN_YEARS = "10y"
+    TWENTY_YEARS = "20y"
     MAX = "max"
 
 
