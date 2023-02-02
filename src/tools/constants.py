@@ -9,6 +9,7 @@ class YfinancePeriod(Enum):
     ONE_DAY = "1d"
     ONE_WEEK = "1wk"
     SIXTY_DAYS = "60d"
+    SEVEN_HUNDRED_TWENTY_NINE_DAYS = "729d"
     SEVEN_HUNDRED_THIRTY_DAYS = "730d"
     ONE_MONTH = "1mo"
     ONE_YEAR = "1y"

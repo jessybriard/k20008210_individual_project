@@ -67,4 +67,4 @@ def create_labeled_data(
         }
     ).set_index("timestamp")
     labeled_data.index = pd.DatetimeIndex(labeled_data.index)
-    return undersample(labeled_data)
+    return undersample(labeled_data=labeled_data)

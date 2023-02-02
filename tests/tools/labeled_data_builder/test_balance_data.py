@@ -8,7 +8,7 @@ import pandas as pd
 from src.tools.labeled_data_builder.balance_data import undersample
 
 
-class TestBalanceData(TestCase):
+class TestLabeledDataBuilderBalanceData(TestCase):
     """Test class for methods in labeled_data_builder/balance_data.py."""
 
     # Tests for method undersample()

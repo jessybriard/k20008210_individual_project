@@ -9,6 +9,8 @@ from src.tools.statistical_evaluation import ClassificationEvaluation
 class TestClassificationEvaluation(TestCase):
     """Test class for methods in class ClassificationEvaluation."""
 
+    # Tests for method validate_predictions_length()
+
     def test_validate_predictions_length_empty_lists(self):
 
         # Arrange
@@ -114,6 +116,8 @@ class TestClassificationEvaluation(TestCase):
         self.assertEqual(evaluation.precision, 0.1)
         self.assertEqual(evaluation.recall, 0.2)
         self.assertEqual(evaluation.f1_score, 0.13333333333333333)
+
+    # Tests for method __str__()
 
     @patch("sklearn.metrics.classification_report")
     def test_str_overload(self, mock_classification_report_method):
