@@ -17,8 +17,6 @@ def generate_sample(data: pd.DataFrame) -> pd.DataFrame:
 
     """
     data_length = len(data)
-    sample = pd.DataFrame(columns=data.columns)
-    while len(sample) < data_length:
-        i = randint(0, data_length - 1)
-        sample = pd.concat([sample, data.iloc[i : i + 1]])
+    sample_index = [randint(0, data_length - 1) for _ in range(data_length)]
+    sample = data.iloc[sample_index]
     return sample
