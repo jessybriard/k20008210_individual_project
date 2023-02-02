@@ -53,7 +53,7 @@ class YfinanceDataProvider:
     @staticmethod
     def get_hourly_returns(
         tickers: Union[str, List[str]],
-        period: Union[YfinancePeriod, str] = YfinancePeriod.SEVEN_HUNDRED_THIRTY_DAYS,
+        period: Union[YfinancePeriod, str] = YfinancePeriod.SEVEN_HUNDRED_TWENTY_NINE_DAYS,
     ) -> pd.DataFrame:
         """Get historical hourly Open and Close prices for tickers, from Yahoo Finance, and calculate hourly returns.
 

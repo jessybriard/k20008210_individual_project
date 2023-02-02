@@ -503,7 +503,7 @@ class TestYfinanceDataProvider(TestCase):
         # Assert
         expected_parameters = {
             "tickers": ["CL=F", "EUR=X"],
-            "period": YfinancePeriod.SEVEN_HUNDRED_THIRTY_DAYS,
+            "period": YfinancePeriod.SEVEN_HUNDRED_TWENTY_NINE_DAYS,
             "interval": YfinanceInterval.ONE_HOUR,
             "group_by": YfinanceGroupBy.TICKER,
         }
