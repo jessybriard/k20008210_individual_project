@@ -1,15 +1,13 @@
-"""Method to compare the performance of individual and sector approach for a pair of forex ticker and commodities
-ticker(s), and a choice of Classification model. The method uses Monte-Carlo Cross-Validation to estimate the accuracy
-of predicting (discrete) hourly returns for both approaches. Then, for both the 'individual' and the 'sector' approach,
-using the results from these samples, hypothesis testing is conducted to determine if the results come from Gaussian
-(normal) distribution, and to determine if the difference in mean accuracy is statistically significant compared to
-random guessing and compared to the other approach. We assume the accuracy of random guessing to come from a Gaussian
-distribution with mean 0.5, because our labeled data is balanced with 50% of 'True' labels and 50% of 'False' labels."""
+"""Method(s) to compare the performance of individual and sector approach for a pair of forex ticker and commodities
+ticker(s), and a choice of Machine Learning model. The method uses Monte-Carlo Cross-Validation to estimate the
+performance of hourly predictions for both approaches. Then, for both the 'individual' and the 'sector' approach,
+hypothesis testing is conducted on the results aggregated from these samples."""
 
 from functools import reduce
 from operator import add
 from typing import List
 
+from src.tools.constants import PriceAttribute
 from src.tools.hypothesis_testing import lilliefors_test, one_sample_t_test, two_sample_t_test
 from src.tools.labeled_data_builder.monte_carlo_cross_validation import generate_train_test_sample
 from src.tools.labeled_data_builder.time_series_forecasting import create_labeled_data
@@ -41,7 +39,9 @@ def evaluate_and_compare_classification(
     """
 
     features_length = 5
-    data = YfinanceDataProvider.get_hourly_returns(comdty_tickers + [forex_ticker])
+    data = YfinanceDataProvider.get_hourly_changes(
+        attribute=PriceAttribute.CLOSE, tickers=comdty_tickers + [forex_ticker]
+    )
     labeled_data = create_labeled_data(
         ticker_label=forex_ticker,
         tickers_features=comdty_tickers + [forex_ticker],

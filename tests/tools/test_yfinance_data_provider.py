@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 import pandas as pd
 
-from src.tools.constants import YfinanceGroupBy, YfinanceInterval, YfinancePeriod
+from src.tools.constants import PriceAttribute, YfinanceGroupBy, YfinanceInterval, YfinancePeriod
 from src.tools.yfinance_data_provider import YfinanceDataProvider
 
 
@@ -295,11 +295,12 @@ class TestYfinanceDataProvider(TestCase):
 
         # Arrange
         mock_get_data_method.side_effect = self.mock_download_side_effect
+        attribute = PriceAttribute.CLOSE
         tickers = "CL=F"
         period = "7h"
 
         # Act
-        changes_data = YfinanceDataProvider.get_hourly_changes(tickers=tickers, period=period)
+        changes_data = YfinanceDataProvider.get_hourly_changes(attribute=attribute, tickers=tickers, period=period)
 
         # Assert
         expected_parameters = {
@@ -331,11 +332,12 @@ class TestYfinanceDataProvider(TestCase):
 
         # Arrange
         mock_get_data_method.side_effect = self.mock_download_side_effect
+        attribute = PriceAttribute.CLOSE
         tickers = ["CL=F"]
         period = "7h"
 
         # Act
-        changes_data = YfinanceDataProvider.get_hourly_changes(tickers=tickers, period=period)
+        changes_data = YfinanceDataProvider.get_hourly_changes(attribute=attribute, tickers=tickers, period=period)
 
         # Assert
         expected_parameters = {
@@ -367,11 +369,12 @@ class TestYfinanceDataProvider(TestCase):
 
         # Arrange
         mock_get_data_method.side_effect = self.mock_download_side_effect
+        attribute = PriceAttribute.CLOSE
         tickers = ["CL=F", "EUR=X"]
         period = "7h"
 
         # Act
-        changes_data = YfinanceDataProvider.get_hourly_changes(tickers=tickers, period=period)
+        changes_data = YfinanceDataProvider.get_hourly_changes(attribute=attribute, tickers=tickers, period=period)
 
         # Assert
         expected_parameters = {
@@ -418,12 +421,13 @@ class TestYfinanceDataProvider(TestCase):
 
         # Arrange
         mock_download_method.side_effect = self.mock_download_side_effect
+        attribute = PriceAttribute.CLOSE
         tickers = ""
         period = "7h"
 
         # Act / Assert
         with self.assertRaises(ValueError) as e:
-            YfinanceDataProvider.get_hourly_changes(tickers=tickers, period=period)
+            YfinanceDataProvider.get_hourly_changes(attribute=attribute, tickers=tickers, period=period)
         self.assertEqual(str(e.exception), "Parameter 'tickers' cannot be empty.")
 
     @patch("yfinance.download")
@@ -431,12 +435,13 @@ class TestYfinanceDataProvider(TestCase):
 
         # Arrange
         mock_download_method.side_effect = self.mock_download_side_effect
+        attribute = PriceAttribute.CLOSE
         tickers = []
         period = "7h"
 
         # Act / Assert
         with self.assertRaises(ValueError) as e:
-            YfinanceDataProvider.get_hourly_changes(tickers=tickers, period=period)
+            YfinanceDataProvider.get_hourly_changes(attribute=attribute, tickers=tickers, period=period)
         self.assertEqual(str(e.exception), "Parameter 'tickers' cannot be empty.")
 
     @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
@@ -444,11 +449,12 @@ class TestYfinanceDataProvider(TestCase):
 
         # Arrange
         mock_get_data_method.side_effect = self.mock_download_side_effect
+        attribute = PriceAttribute.CLOSE
         tickers = ["CL=F", "EUR=X"]
         period = YfinancePeriod.ONE_DAY
 
         # Act
-        changes_data = YfinanceDataProvider.get_hourly_changes(tickers=tickers, period=period)
+        changes_data = YfinanceDataProvider.get_hourly_changes(attribute=attribute, tickers=tickers, period=period)
 
         # Assert
         expected_parameters = {
@@ -495,10 +501,11 @@ class TestYfinanceDataProvider(TestCase):
 
         # Arrange
         mock_get_data_method.side_effect = self.mock_download_side_effect
+        attribute = PriceAttribute.CLOSE
         tickers = ["CL=F", "EUR=X"]
 
         # Act
-        changes_data = YfinanceDataProvider.get_hourly_changes(tickers=tickers)
+        changes_data = YfinanceDataProvider.get_hourly_changes(attribute=attribute, tickers=tickers)
 
         # Assert
         expected_parameters = {
@@ -539,3 +546,29 @@ class TestYfinanceDataProvider(TestCase):
             }
         )
         self.assertTrue(expected_changes_data.equals(changes_data))
+
+    @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
+    def test_get_hourly_changes_attribute_is_open(self, mock_get_data_method):
+
+        # Arrange
+        mock_get_data_method.side_effect = self.mock_download_side_effect
+        attribute = PriceAttribute.OPEN
+        tickers = ["CL=F", "EUR=X"]
+
+        # Act
+        with self.assertRaises(ValueError) as e:
+            YfinanceDataProvider.get_hourly_changes(attribute=attribute, tickers=tickers)
+        self.assertEqual("Cannot extract changes for price attributes 'Open' or 'Volume'.", str(e.exception))
+
+    @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
+    def test_get_hourly_changes_attribute_is_volume(self, mock_get_data_method):
+
+        # Arrange
+        mock_get_data_method.side_effect = self.mock_download_side_effect
+        attribute = PriceAttribute.VOLUME
+        tickers = ["CL=F", "EUR=X"]
+
+        # Act
+        with self.assertRaises(ValueError) as e:
+            YfinanceDataProvider.get_hourly_changes(attribute=attribute, tickers=tickers)
+        self.assertEqual("Cannot extract changes for price attributes 'Open' or 'Volume'.", str(e.exception))

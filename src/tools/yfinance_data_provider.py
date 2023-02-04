@@ -5,7 +5,7 @@ from typing import List, Union
 import pandas as pd
 import yfinance as yf
 
-from src.tools.constants import YfinanceGroupBy, YfinanceInterval, YfinancePeriod
+from src.tools.constants import PriceAttribute, YfinanceGroupBy, YfinanceInterval, YfinancePeriod
 from src.tools.helper_methods import extract_changes_from_dataframe
 
 
@@ -52,14 +52,16 @@ class YfinanceDataProvider:
 
     @staticmethod
     def get_hourly_changes(
+        attribute: PriceAttribute,
         tickers: Union[str, List[str]],
         period: Union[YfinancePeriod, str] = YfinancePeriod.SEVEN_HUNDRED_TWENTY_NINE_DAYS,
     ) -> pd.DataFrame:
-        """Get historical hourly Open and Close prices for tickers, from Yahoo Finance, and calculate hourly changes.
+        """Get historical hourly prices for tickers, from Yahoo Finance, and calculate hourly changes for the selected
+        price attribute.
 
         Args:
-            tickers (Union[str, List[str]]): The ticker for the asset(s) to retrieve hourly historical Open and Close
-                prices for.
+            attribute (PriceAttribute): The price attribute (column) to retrieve hourly data for.
+            tickers (Union[str, List[str]]): The ticker for the asset(s) to retrieve hourly historical prices for.
             period (Union[YfinancePeriod, str]): The period of the time series.
 
         Returns:
@@ -77,7 +79,7 @@ class YfinanceDataProvider:
         if isinstance(tickers, list) and len(tickers) > 1:
             changes_data = pd.DataFrame()
             for ticker in tickers:
-                ticker_changes_data = extract_changes_from_dataframe(data=data[ticker])
+                ticker_changes_data = extract_changes_from_dataframe(attribute=attribute, data=data[ticker])
                 changes_data = pd.concat(
                     [
                         changes_data,
@@ -89,5 +91,5 @@ class YfinanceDataProvider:
         else:
             if isinstance(tickers, list):
                 tickers = tickers[0]
-            return pd.DataFrame(data={tickers: extract_changes_from_dataframe(data=data)})
+            return pd.DataFrame(data={tickers: extract_changes_from_dataframe(attribute=attribute, data=data)})
         return changes_data
