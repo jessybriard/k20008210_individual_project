@@ -7,15 +7,15 @@ from typing import List, Tuple, Union
 import pandas as pd
 from scipy import stats
 
-from src.tools.constants import YfinanceGroupBy, YfinanceInterval, YfinancePeriod
+from src.tools.constants import PriceAttribute, YfinanceGroupBy, YfinanceInterval, YfinancePeriod
 from src.tools.yfinance_data_provider import YfinanceDataProvider
 
 
 def correlation_analysis_single_combination(
     ticker1: str,
     ticker2: str,
-    column_ticker1: str = "Close",
-    column_ticker2: str = "Close",
+    column_ticker1: PriceAttribute,
+    column_ticker2: PriceAttribute,
     data: Union[None, pd.DataFrame] = None,
 ) -> Tuple[float, float]:
     """Correlation analysis of historical data for two tickers. Returns the Pearson correlation coefficient
@@ -26,8 +26,8 @@ def correlation_analysis_single_combination(
     Args:
         ticker1 (str): The first ticker to compare.
         ticker2 (str): The second ticker to compare.
-        column_ticker1 (str): The attribute to use as data for ticker1 (the column of the 'data' DataFrame).
-        column_ticker2 (str): The attribute to use as data for ticker2 (the column of the 'data' DataFrame).
+        column_ticker1 (PriceAttribute): The attribute to use as data for ticker1 (the column of the 'data' DataFrame).
+        column_ticker2 (PriceAttribute): The attribute to use as data for ticker2 (the column of the 'data' DataFrame).
         data (Union[None, pd.DataFrame]): The DataFrame containing the historical data for the tickers ; if not
             provided, download 730 days of past hourly historical data for the tickers.
 
@@ -47,13 +47,10 @@ def correlation_analysis_single_combination(
             interval=YfinanceInterval.ONE_HOUR,
             group_by=YfinanceGroupBy.COLUMN,
         )
-    attribute_columns = {attribute for attribute, ticker in data.columns}
-    if column_ticker1 not in attribute_columns or column_ticker2 not in attribute_columns:
-        raise ValueError("Parameters 'column_ticker1' and 'column_ticker2' must represent valid columns of the 'data'.")
-    if ticker1 not in data[column_ticker1].columns or ticker2 not in data[column_ticker2].columns:
+    if ticker1 not in data[column_ticker1.value].columns or ticker2 not in data[column_ticker2.value].columns:
         raise ValueError("Parameters 'ticker1' and 'ticker2' must represent valid tickers in the 'data'.")
-    data_ticker1 = data[column_ticker1][ticker1].values
-    data_ticker2 = data[column_ticker2][ticker2].values
+    data_ticker1 = data[column_ticker1.value][ticker1].values
+    data_ticker2 = data[column_ticker2.value][ticker2].values
     non_nan_rows = [i for i in range(len(data)) if not math.isnan(data_ticker1[i]) and not math.isnan(data_ticker2[i])]
     clean_data_ticker1 = [data_ticker1[i] for i in non_nan_rows]
     clean_data_ticker2 = [data_ticker2[i] for i in non_nan_rows]
@@ -61,7 +58,7 @@ def correlation_analysis_single_combination(
 
 
 def correlation_analysis_lists_cardinal_product(
-    list_ticker1: List[str], list_ticker2: List[str], column_ticker1: str, column_ticker2: str
+    list_ticker1: List[str], list_ticker2: List[str], column_ticker1: PriceAttribute, column_ticker2: PriceAttribute
 ) -> dict:
     """Analyse the correlation of all combinations (cardinal product) between two lists of tickers, for specific
     attributes. Returns a dictionary containing correlation insights for all ticker combinations.
@@ -69,8 +66,8 @@ def correlation_analysis_lists_cardinal_product(
     Args:
         list_ticker1 (List[str]): First list of tickers, to analyse their correlation with the second list of tickers.
         list_ticker2 (List[str]): Second list of tickers, to analyse their correlation with the first list of tickers.
-        column_ticker1 (str): The attribute of the ticker from the first list to use to analyse correlation.
-        column_ticker2 (str): The attribute of the ticker from the second list to use to analyse correlation.
+        column_ticker1 (PriceAttribute): The attribute of the ticker from the first list to use to analyse correlation.
+        column_ticker2 (PriceAttribute): The attribute of the ticker from the second list to use to analyse correlation.
 
     Returns:
         correlation_insights (dict): Dictionary containing correlation insights for all ticker combinations.
