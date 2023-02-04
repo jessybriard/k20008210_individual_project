@@ -53,10 +53,10 @@ def evaluate_and_compare_classification(
     for i in range(nb_samples):
         train_data, test_data = generate_train_test_sample(data=labeled_data, train_percentage=0.8)
         for approach in ["individual", "sector"]:
-            model.fit(list(train_data[f"features_{approach}"].values), list(train_data["label"].values))
+            model.fit(list(train_data[f"features_{approach}"].values), list(train_data["label_classification"].values))
             predictions = model.predict(list(test_data[f"features_{approach}"].values))
             classification_evaluation = ClassificationEvaluation(
-                y_true=list(test_data["label"].values), y_predicted=list(predictions)
+                y_true=list(test_data["label_classification"].values), y_predicted=list(predictions)
             )
             accuracies[approach].append(classification_evaluation.accuracy)
 
