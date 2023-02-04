@@ -17,10 +17,10 @@ def undersample(labeled_data: pd.DataFrame) -> pd.DataFrame:
 
     """
 
-    if "label" not in labeled_data.columns:
-        raise ValueError("The given labeled_data does not contain a 'label' column.")
+    if "label_classification" not in labeled_data.columns:
+        raise ValueError("The given labeled_data does not contain a 'label_classification' column.")
 
-    class_distribution = Counter(labeled_data["label"].values).most_common()
+    class_distribution = Counter(labeled_data["label_classification"].values).most_common()
 
     if len(class_distribution) > 2:
         raise ValueError(
@@ -32,8 +32,8 @@ def undersample(labeled_data: pd.DataFrame) -> pd.DataFrame:
 
     while class_distribution[0][1] > class_distribution[1][1]:
         i = randint(0, len(labeled_data) - 1)
-        if labeled_data.iloc[i]["label"] == class_distribution[0][0]:
+        if labeled_data.iloc[i]["label_classification"] == class_distribution[0][0]:
             labeled_data = labeled_data.drop(labeled_data.index[i])
-            class_distribution = Counter(labeled_data["label"].values).most_common()
+            class_distribution = Counter(labeled_data["label_classification"].values).most_common()
 
     return labeled_data

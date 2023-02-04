@@ -5,26 +5,32 @@ from typing import Union
 
 import pandas as pd
 
+from src.tools.constants import PriceAttribute
 
-def extract_returns_from_dataframe(data: pd.DataFrame) -> pd.Series:
-    """Create a pandas Series representing returns for each row in the given pandas DataFrame.
+
+def extract_changes_from_dataframe(attribute: PriceAttribute, data: pd.DataFrame) -> pd.Series:
+    """Create a pandas Series representing changes (as a percentage) for each row in the given pandas DataFrame.
 
     Args:
+        attribute (PriceAttribute): The price attribute (column) to extract changes for.
         data (pd.DataFrame): The pandas DataFrame containing columns 'Open' and 'Close' columns.
 
     Returns:
-        returns_series (pd.Series): The returns (continuous values), extracted from the DataFrame.
+        change_series (pd.Series): The changes (continuous values), extracted from the DataFrame.
 
     """
 
     if data.empty:
-        returns_series = pd.Series(dtype=object)
-        returns_series.index = pd.DatetimeIndex(returns_series.index, name="Date")
-        return returns_series
+        change_series = pd.Series(dtype=object)
+        change_series.index = pd.DatetimeIndex(change_series.index, name="Date")
+        return change_series
 
-    def daily_return_value(row: pd.Series) -> Union[bool, float]:
-        if math.isnan(row["Open"]) or math.isnan(row["Close"]):
+    if attribute == PriceAttribute.OPEN or attribute == PriceAttribute.VOLUME:
+        raise ValueError("Cannot extract changes for price attributes 'Open' or 'Volume'.")
+
+    def row_change_value(row: pd.Series) -> Union[bool, float]:
+        if math.isnan(row["Open"]) or math.isnan(row[attribute.value]):
             return math.nan
-        return (row["Close"] - row["Open"]) / row["Open"]
+        return (row[attribute.value] - row["Open"]) / row["Open"]
 
-    return data.apply(lambda row: daily_return_value(row), axis=1)
+    return data.apply(lambda row: row_change_value(row), axis=1)

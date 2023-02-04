@@ -62,8 +62,8 @@ def create_labeled_data(
             "timestamp": timestamp,
             "features_individual": features_individual,
             "features_sector": features_sector,
-            "label": label,
-            "true_return": true_return,
+            "label_classification": label,
+            "label_regression": true_return,
         }
     ).set_index("timestamp")
     labeled_data.index = pd.DatetimeIndex(labeled_data.index)

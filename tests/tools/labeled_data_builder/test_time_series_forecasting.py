@@ -183,8 +183,8 @@ class TestLabeledDataBuilderTimeSeriesForecasting(TestCase):
                 "timestamp": ["2022-11-11", "2022-11-14"],
                 "features_individual": [[-0.04, 0.22], [0.22, -0.12]],
                 "features_sector": [[-0.05, -0.04, 0.05, 0.22], [0.05, 0.22, 0.2, -0.12]],
-                "label": [False, True],
-                "true_return": [-0.12, 0.05],
+                "label_classification": [False, True],
+                "label_regression": [-0.12, 0.05],
             }
         ).set_index("timestamp")
         expected_labeled_data.index = pd.DatetimeIndex(expected_labeled_data.index)
@@ -216,8 +216,8 @@ class TestLabeledDataBuilderTimeSeriesForecasting(TestCase):
                 "timestamp": ["2022-11-09"],
                 "features_individual": [[-0.1, 0.08]],
                 "features_sector": [[0.1, -0.1, -0.06, 0.08]],
-                "label": [False],
-                "true_return": [-0.04],
+                "label_classification": [False],
+                "label_regression": [-0.04],
             }
         ).set_index("timestamp")
         expected_labeled_data.index = pd.DatetimeIndex(expected_labeled_data.index)
@@ -245,7 +245,13 @@ class TestLabeledDataBuilderTimeSeriesForecasting(TestCase):
 
         # Assert
         expected_labeled_data = pd.DataFrame(
-            data={"timestamp": [], "features_individual": [], "features_sector": [], "label": [], "true_return": []}
+            data={
+                "timestamp": [],
+                "features_individual": [],
+                "features_sector": [],
+                "label_classification": [],
+                "label_regression": [],
+            }
         ).set_index("timestamp")
         expected_labeled_data.index = pd.DatetimeIndex(expected_labeled_data.index)
         self.assertTrue(expected_labeled_data.equals(labeled_data))
@@ -272,7 +278,13 @@ class TestLabeledDataBuilderTimeSeriesForecasting(TestCase):
 
         # Assert
         expected_labeled_data = pd.DataFrame(
-            data={"timestamp": [], "features_individual": [], "features_sector": [], "label": [], "true_return": []}
+            data={
+                "timestamp": [],
+                "features_individual": [],
+                "features_sector": [],
+                "label_classification": [],
+                "label_regression": [],
+            }
         ).set_index("timestamp")
         expected_labeled_data.index = pd.DatetimeIndex(expected_labeled_data.index)
         self.assertTrue(expected_labeled_data.equals(labeled_data))
@@ -305,8 +317,8 @@ class TestLabeledDataBuilderTimeSeriesForecasting(TestCase):
                 "features_sector": [
                     [0.1, -0.1, -0.06, 0.08, -0.05, -0.04, 0.05, 0.22, 0.2, -0.12],
                 ],
-                "label": [True],
-                "true_return": [0.05],
+                "label_classification": [True],
+                "label_regression": [0.05],
             }
         ).set_index("timestamp")
         expected_labeled_data.index = pd.DatetimeIndex(expected_labeled_data.index)
@@ -334,7 +346,13 @@ class TestLabeledDataBuilderTimeSeriesForecasting(TestCase):
 
         # Assert
         expected_labeled_data = pd.DataFrame(
-            data={"timestamp": [], "features_individual": [], "features_sector": [], "label": [], "true_return": []}
+            data={
+                "timestamp": [],
+                "features_individual": [],
+                "features_sector": [],
+                "label_classification": [],
+                "label_regression": [],
+            }
         ).set_index("timestamp")
         expected_labeled_data.index = pd.DatetimeIndex(expected_labeled_data.index)
         self.assertTrue(expected_labeled_data.equals(labeled_data))
@@ -368,8 +386,8 @@ class TestLabeledDataBuilderTimeSeriesForecasting(TestCase):
                     [0.1, -0.1, -0.06, 0.08, -0.05, -0.04],
                     [-0.06, 0.08, -0.05, -0.04, 0.05, 0.22],
                 ],
-                "label": [True, False],
-                "true_return": [0.22, -0.12],
+                "label_classification": [True, False],
+                "label_regression": [0.22, -0.12],
             }
         ).set_index("timestamp")
         expected_labeled_data_1.index = pd.DatetimeIndex(expected_labeled_data_1.index)
@@ -381,8 +399,8 @@ class TestLabeledDataBuilderTimeSeriesForecasting(TestCase):
                     [-0.06, 0.08, -0.05, -0.04, 0.05, 0.22],
                     [-0.05, -0.04, 0.05, 0.22, 0.2, -0.12],
                 ],
-                "label": [False, True],
-                "true_return": [-0.12, 0.05],
+                "label_classification": [False, True],
+                "label_regression": [-0.12, 0.05],
             }
         ).set_index("timestamp")
         expected_labeled_data_2.index = pd.DatetimeIndex(expected_labeled_data_2.index)
@@ -417,8 +435,8 @@ class TestLabeledDataBuilderTimeSeriesForecasting(TestCase):
                     [0.1, -0.1, -0.06, 0.08, -0.05, -0.04],
                     [-0.06, 0.08, -0.05, -0.04, 0.05, 0.22],
                 ],
-                "label": [True, False],
-                "true_return": [0.22, -0.12],
+                "label_classification": [True, False],
+                "label_regression": [0.22, -0.12],
             }
         ).set_index("timestamp")
         expected_labeled_data_1.index = pd.DatetimeIndex(expected_labeled_data_1.index)
@@ -430,8 +448,8 @@ class TestLabeledDataBuilderTimeSeriesForecasting(TestCase):
                     [-0.06, 0.08, -0.05, -0.04, 0.05, 0.22],
                     [-0.05, -0.04, 0.05, 0.22, 0.2, -0.12],
                 ],
-                "label": [False, True],
-                "true_return": [-0.12, 0.05],
+                "label_classification": [False, True],
+                "label_regression": [-0.12, 0.05],
             }
         ).set_index("timestamp")
         expected_labeled_data_2.index = pd.DatetimeIndex(expected_labeled_data_2.index)

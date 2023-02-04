@@ -42,3 +42,13 @@ class YfinanceGroupBy(Enum):
 
     COLUMN = "column"
     TICKER = "ticker"
+
+
+class PriceAttribute(Enum):
+    """Available price attribute columns in the financial data retrieved from Yahoo Finance."""
+
+    OPEN = "Open"
+    CLOSE = "Close"
+    HIGH = "High"
+    LOW = "Low"
+    VOLUME = "Volume"

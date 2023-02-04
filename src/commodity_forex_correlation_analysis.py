@@ -2,6 +2,7 @@
 of foreign exchange tickers. Aims to find relevant relationships between arbitrary combinations of commodity and foreign
 exchange tickers."""
 
+from src.tools.constants import PriceAttribute
 from src.tools.correlation_analysis import correlation_analysis_lists_cardinal_product
 
 if __name__ == "__main__":
@@ -74,7 +75,18 @@ if __name__ == "__main__":
         "USDZAR=X",
         "USDRUB=X",
     ]
-    columns = [("Close", "Close", 0.7), ("Volume", "Close", 0.1)]
+    columns = [
+        (PriceAttribute.CLOSE, PriceAttribute.CLOSE, 0.85),
+        (PriceAttribute.HIGH, PriceAttribute.CLOSE, 0.85),
+        (PriceAttribute.LOW, PriceAttribute.CLOSE, 0.85),
+        (PriceAttribute.HIGH, PriceAttribute.HIGH, 0.85),
+        (PriceAttribute.LOW, PriceAttribute.HIGH, 0.85),
+        (PriceAttribute.CLOSE, PriceAttribute.HIGH, 0.85),
+        (PriceAttribute.LOW, PriceAttribute.LOW, 0.85),
+        (PriceAttribute.HIGH, PriceAttribute.LOW, 0.85),
+        (PriceAttribute.CLOSE, PriceAttribute.LOW, 0.85),
+        (PriceAttribute.VOLUME, PriceAttribute.CLOSE, 0.13),
+    ]
 
     for column_commodity, column_forex, correlation_threshold in columns:
         print(f"\n{column_commodity} -> {column_forex}\n")
