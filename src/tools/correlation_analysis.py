@@ -43,7 +43,7 @@ def correlation_analysis_single_combination(
     if data is None:
         data = YfinanceDataProvider.get_data(
             tickers=[ticker1, ticker2],
-            period=YfinancePeriod.SEVEN_HUNDRED_THIRTY_DAYS,
+            period=YfinancePeriod.SEVEN_HUNDRED_TWENTY_NINE_DAYS,
             interval=YfinanceInterval.ONE_HOUR,
             group_by=YfinanceGroupBy.COLUMN,
         )
@@ -77,7 +77,7 @@ def correlation_analysis_lists_cardinal_product(
     """
     data = YfinanceDataProvider.get_data(
         tickers=list_ticker1 + list_ticker2,
-        period=YfinancePeriod.SEVEN_HUNDRED_THIRTY_DAYS,
+        period=YfinancePeriod.SEVEN_HUNDRED_TWENTY_NINE_DAYS,
         interval=YfinanceInterval.ONE_HOUR,
         group_by=YfinanceGroupBy.COLUMN,
     )

@@ -74,7 +74,18 @@ if __name__ == "__main__":
         "USDZAR=X",
         "USDRUB=X",
     ]
-    columns = [("Close", "Close", 0.7), ("Volume", "Close", 0.1)]
+    columns = [
+        ("Close", "Close", 0.85),
+        ("High", "Close", 0.85),
+        ("Low", "Close", 0.85),
+        ("High", "High", 0.85),
+        ("Low", "High", 0.85),
+        ("Close", "High", 0.85),
+        ("Low", "Low", 0.85),
+        ("High", "Low", 0.85),
+        ("Close", "Low", 0.85),
+        ("Volume", "Close", 0.13),
+    ]
 
     for column_commodity, column_forex, correlation_threshold in columns:
         print(f"\n{column_commodity} -> {column_forex}\n")
