@@ -288,10 +288,10 @@ class TestYfinanceDataProvider(TestCase):
         self.assertEqual(expected_parameters, self.parameters)
         self.assertTrue(self.yf_download_output.equals(data))
 
-    # Tests for method get_hourly_returns()
+    # Tests for method get_hourly_changes()
 
     @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
-    def test_get_hourly_returns_single_ticker_str(self, mock_get_data_method):
+    def test_get_hourly_changes_single_ticker_str(self, mock_get_data_method):
 
         # Arrange
         mock_get_data_method.side_effect = self.mock_download_side_effect
@@ -299,7 +299,7 @@ class TestYfinanceDataProvider(TestCase):
         period = "7h"
 
         # Act
-        returns_data = YfinanceDataProvider.get_hourly_returns(tickers=tickers, period=period)
+        changes_data = YfinanceDataProvider.get_hourly_changes(tickers=tickers, period=period)
 
         # Assert
         expected_parameters = {
@@ -309,7 +309,7 @@ class TestYfinanceDataProvider(TestCase):
             "group_by": YfinanceGroupBy.TICKER,
         }
         self.assertEqual(expected_parameters, self.parameters)
-        expected_returns_series = pd.Series(
+        expected_changes_series = pd.Series(
             data={
                 "2023-02-01 02:00:00-05:00": 0.0006307774541483123,
                 "2023-02-01 03:00:00-05:00": 0.003026454659943564,
@@ -320,14 +320,14 @@ class TestYfinanceDataProvider(TestCase):
                 "2023-02-01 08:00:00-05:00": 0.0013892474100479647,
             }
         )
-        expected_returns_series.index = pd.DatetimeIndex(
-            expected_returns_series.index, dtype="datetime64[ns, America/New_York]"
+        expected_changes_series.index = pd.DatetimeIndex(
+            expected_changes_series.index, dtype="datetime64[ns, America/New_York]"
         )
-        expected_returns_data = pd.DataFrame(data={"CL=F": expected_returns_series})
-        self.assertTrue(expected_returns_data.equals(returns_data))
+        expected_changes_data = pd.DataFrame(data={"CL=F": expected_changes_series})
+        self.assertTrue(expected_changes_data.equals(changes_data))
 
     @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
-    def test_get_hourly_returns_single_ticker_list(self, mock_get_data_method):
+    def test_get_hourly_changes_single_ticker_list(self, mock_get_data_method):
 
         # Arrange
         mock_get_data_method.side_effect = self.mock_download_side_effect
@@ -335,7 +335,7 @@ class TestYfinanceDataProvider(TestCase):
         period = "7h"
 
         # Act
-        returns_data = YfinanceDataProvider.get_hourly_returns(tickers=tickers, period=period)
+        changes_data = YfinanceDataProvider.get_hourly_changes(tickers=tickers, period=period)
 
         # Assert
         expected_parameters = {
@@ -345,7 +345,7 @@ class TestYfinanceDataProvider(TestCase):
             "group_by": YfinanceGroupBy.TICKER,
         }
         self.assertEqual(expected_parameters, self.parameters)
-        expected_returns_series = pd.Series(
+        expected_changes_series = pd.Series(
             data={
                 "2023-02-01 02:00:00-05:00": 0.0006307774541483123,
                 "2023-02-01 03:00:00-05:00": 0.003026454659943564,
@@ -356,14 +356,14 @@ class TestYfinanceDataProvider(TestCase):
                 "2023-02-01 08:00:00-05:00": 0.0013892474100479647,
             }
         )
-        expected_returns_series.index = pd.DatetimeIndex(
-            expected_returns_series.index, dtype="datetime64[ns, America/New_York]"
+        expected_changes_series.index = pd.DatetimeIndex(
+            expected_changes_series.index, dtype="datetime64[ns, America/New_York]"
         )
-        expected_returns_data = pd.DataFrame(data={"CL=F": expected_returns_series})
-        self.assertTrue(expected_returns_data.equals(returns_data))
+        expected_changes_data = pd.DataFrame(data={"CL=F": expected_changes_series})
+        self.assertTrue(expected_changes_data.equals(changes_data))
 
     @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
-    def test_get_hourly_returns_multiple_tickers_list(self, mock_get_data_method):
+    def test_get_hourly_changes_multiple_tickers_list(self, mock_get_data_method):
 
         # Arrange
         mock_get_data_method.side_effect = self.mock_download_side_effect
@@ -371,7 +371,7 @@ class TestYfinanceDataProvider(TestCase):
         period = "7h"
 
         # Act
-        returns_data = YfinanceDataProvider.get_hourly_returns(tickers=tickers, period=period)
+        changes_data = YfinanceDataProvider.get_hourly_changes(tickers=tickers, period=period)
 
         # Assert
         expected_parameters = {
@@ -381,7 +381,7 @@ class TestYfinanceDataProvider(TestCase):
             "group_by": YfinanceGroupBy.TICKER,
         }
         self.assertEqual(expected_parameters, self.parameters)
-        expected_returns_series_cl = pd.Series(
+        expected_changes_series_cl = pd.Series(
             data={
                 "2023-02-01 07:00:00+00:00": 0.0030352581850995137,
                 "2023-02-01 08:00:00+00:00": 0.003026454659943564,
@@ -392,8 +392,8 @@ class TestYfinanceDataProvider(TestCase):
                 "2023-02-01 13:00:00+00:00": 0.0010103792718659285,
             }
         )
-        expected_returns_series_cl.index = pd.DatetimeIndex(expected_returns_series_cl.index)
-        expected_returns_series_eur = pd.Series(
+        expected_changes_series_cl.index = pd.DatetimeIndex(expected_changes_series_cl.index)
+        expected_changes_series_eur = pd.Series(
             data={
                 "2023-02-01 07:00:00+00:00": -0.0010873618584464582,
                 "2023-02-01 08:00:00+00:00": -0.0005442078713167677,
@@ -404,17 +404,17 @@ class TestYfinanceDataProvider(TestCase):
                 "2023-02-01 13:00:00+00:00": -0.001307354046709806,
             }
         )
-        expected_returns_series_eur.index = pd.DatetimeIndex(expected_returns_series_eur.index)
-        expected_returns_data = pd.DataFrame(
+        expected_changes_series_eur.index = pd.DatetimeIndex(expected_changes_series_eur.index)
+        expected_changes_data = pd.DataFrame(
             data={
-                "CL=F": expected_returns_series_cl,
-                "EUR=X": expected_returns_series_eur,
+                "CL=F": expected_changes_series_cl,
+                "EUR=X": expected_changes_series_eur,
             }
         )
-        self.assertTrue(expected_returns_data.equals(returns_data))
+        self.assertTrue(expected_changes_data.equals(changes_data))
 
     @patch("yfinance.download")
-    def test_get_hourly_returns_tickers_empty_str(self, mock_download_method):
+    def test_get_hourly_changes_tickers_empty_str(self, mock_download_method):
 
         # Arrange
         mock_download_method.side_effect = self.mock_download_side_effect
@@ -423,11 +423,11 @@ class TestYfinanceDataProvider(TestCase):
 
         # Act / Assert
         with self.assertRaises(ValueError) as e:
-            YfinanceDataProvider.get_hourly_returns(tickers=tickers, period=period)
+            YfinanceDataProvider.get_hourly_changes(tickers=tickers, period=period)
         self.assertEqual(str(e.exception), "Parameter 'tickers' cannot be empty.")
 
     @patch("yfinance.download")
-    def test_get_hourly_returns_tickers_empty_list(self, mock_download_method):
+    def test_get_hourly_changes_tickers_empty_list(self, mock_download_method):
 
         # Arrange
         mock_download_method.side_effect = self.mock_download_side_effect
@@ -436,11 +436,11 @@ class TestYfinanceDataProvider(TestCase):
 
         # Act / Assert
         with self.assertRaises(ValueError) as e:
-            YfinanceDataProvider.get_hourly_returns(tickers=tickers, period=period)
+            YfinanceDataProvider.get_hourly_changes(tickers=tickers, period=period)
         self.assertEqual(str(e.exception), "Parameter 'tickers' cannot be empty.")
 
     @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
-    def test_get_hourly_returns_period_enum(self, mock_get_data_method):
+    def test_get_hourly_changes_period_enum(self, mock_get_data_method):
 
         # Arrange
         mock_get_data_method.side_effect = self.mock_download_side_effect
@@ -448,7 +448,7 @@ class TestYfinanceDataProvider(TestCase):
         period = YfinancePeriod.ONE_DAY
 
         # Act
-        returns_data = YfinanceDataProvider.get_hourly_returns(tickers=tickers, period=period)
+        changes_data = YfinanceDataProvider.get_hourly_changes(tickers=tickers, period=period)
 
         # Assert
         expected_parameters = {
@@ -458,7 +458,7 @@ class TestYfinanceDataProvider(TestCase):
             "group_by": YfinanceGroupBy.TICKER,
         }
         self.assertEqual(expected_parameters, self.parameters)
-        expected_returns_series_cl = pd.Series(
+        expected_changes_series_cl = pd.Series(
             data={
                 "2023-02-01 07:00:00+00:00": 0.0030352581850995137,
                 "2023-02-01 08:00:00+00:00": 0.003026454659943564,
@@ -469,8 +469,8 @@ class TestYfinanceDataProvider(TestCase):
                 "2023-02-01 13:00:00+00:00": 0.0010103792718659285,
             }
         )
-        expected_returns_series_cl.index = pd.DatetimeIndex(expected_returns_series_cl.index)
-        expected_returns_series_eur = pd.Series(
+        expected_changes_series_cl.index = pd.DatetimeIndex(expected_changes_series_cl.index)
+        expected_changes_series_eur = pd.Series(
             data={
                 "2023-02-01 07:00:00+00:00": -0.0010873618584464582,
                 "2023-02-01 08:00:00+00:00": -0.0005442078713167677,
@@ -481,24 +481,24 @@ class TestYfinanceDataProvider(TestCase):
                 "2023-02-01 13:00:00+00:00": -0.001307354046709806,
             }
         )
-        expected_returns_series_eur.index = pd.DatetimeIndex(expected_returns_series_eur.index)
-        expected_returns_data = pd.DataFrame(
+        expected_changes_series_eur.index = pd.DatetimeIndex(expected_changes_series_eur.index)
+        expected_changes_data = pd.DataFrame(
             data={
-                "CL=F": expected_returns_series_cl,
-                "EUR=X": expected_returns_series_eur,
+                "CL=F": expected_changes_series_cl,
+                "EUR=X": expected_changes_series_eur,
             }
         )
-        self.assertTrue(expected_returns_data.equals(returns_data))
+        self.assertTrue(expected_changes_data.equals(changes_data))
 
     @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
-    def test_get_hourly_returns_period_default(self, mock_get_data_method):
+    def test_get_hourly_changes_period_default(self, mock_get_data_method):
 
         # Arrange
         mock_get_data_method.side_effect = self.mock_download_side_effect
         tickers = ["CL=F", "EUR=X"]
 
         # Act
-        returns_data = YfinanceDataProvider.get_hourly_returns(tickers=tickers)
+        changes_data = YfinanceDataProvider.get_hourly_changes(tickers=tickers)
 
         # Assert
         expected_parameters = {
@@ -508,7 +508,7 @@ class TestYfinanceDataProvider(TestCase):
             "group_by": YfinanceGroupBy.TICKER,
         }
         self.assertEqual(expected_parameters, self.parameters)
-        expected_returns_series_cl = pd.Series(
+        expected_changes_series_cl = pd.Series(
             data={
                 "2023-02-01 07:00:00+00:00": 0.0030352581850995137,
                 "2023-02-01 08:00:00+00:00": 0.003026454659943564,
@@ -519,8 +519,8 @@ class TestYfinanceDataProvider(TestCase):
                 "2023-02-01 13:00:00+00:00": 0.0010103792718659285,
             }
         )
-        expected_returns_series_cl.index = pd.DatetimeIndex(expected_returns_series_cl.index)
-        expected_returns_series_eur = pd.Series(
+        expected_changes_series_cl.index = pd.DatetimeIndex(expected_changes_series_cl.index)
+        expected_changes_series_eur = pd.Series(
             data={
                 "2023-02-01 07:00:00+00:00": -0.0010873618584464582,
                 "2023-02-01 08:00:00+00:00": -0.0005442078713167677,
@@ -531,11 +531,11 @@ class TestYfinanceDataProvider(TestCase):
                 "2023-02-01 13:00:00+00:00": -0.001307354046709806,
             }
         )
-        expected_returns_series_eur.index = pd.DatetimeIndex(expected_returns_series_eur.index)
-        expected_returns_data = pd.DataFrame(
+        expected_changes_series_eur.index = pd.DatetimeIndex(expected_changes_series_eur.index)
+        expected_changes_data = pd.DataFrame(
             data={
-                "CL=F": expected_returns_series_cl,
-                "EUR=X": expected_returns_series_eur,
+                "CL=F": expected_changes_series_cl,
+                "EUR=X": expected_changes_series_eur,
             }
         )
-        self.assertTrue(expected_returns_data.equals(returns_data))
+        self.assertTrue(expected_changes_data.equals(changes_data))

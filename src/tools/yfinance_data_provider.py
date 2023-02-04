@@ -6,7 +6,7 @@ import pandas as pd
 import yfinance as yf
 
 from src.tools.constants import YfinanceGroupBy, YfinanceInterval, YfinancePeriod
-from src.tools.helper_methods import extract_returns_from_dataframe
+from src.tools.helper_methods import extract_changes_from_dataframe
 
 
 class YfinanceDataProvider:
@@ -51,11 +51,11 @@ class YfinanceDataProvider:
         return data
 
     @staticmethod
-    def get_hourly_returns(
+    def get_hourly_changes(
         tickers: Union[str, List[str]],
         period: Union[YfinancePeriod, str] = YfinancePeriod.SEVEN_HUNDRED_TWENTY_NINE_DAYS,
     ) -> pd.DataFrame:
-        """Get historical hourly Open and Close prices for tickers, from Yahoo Finance, and calculate hourly returns.
+        """Get historical hourly Open and Close prices for tickers, from Yahoo Finance, and calculate hourly changes.
 
         Args:
             tickers (Union[str, List[str]]): The ticker for the asset(s) to retrieve hourly historical Open and Close
@@ -63,7 +63,7 @@ class YfinanceDataProvider:
             period (Union[YfinancePeriod, str]): The period of the time series.
 
         Returns:
-            returns_data (pd.DataFrame): The calculated hourly returns time series.
+            changes_data (pd.DataFrame): The calculated hourly changes (percentage) time series.
 
         """
 
@@ -75,13 +75,13 @@ class YfinanceDataProvider:
         )
 
         if isinstance(tickers, list) and len(tickers) > 1:
-            returns_data = pd.DataFrame()
+            changes_data = pd.DataFrame()
             for ticker in tickers:
-                ticker_returns_data = extract_returns_from_dataframe(data=data[ticker])
-                returns_data = pd.concat(
+                ticker_changes_data = extract_changes_from_dataframe(data=data[ticker])
+                changes_data = pd.concat(
                     [
-                        returns_data,
-                        pd.DataFrame(data={ticker: ticker_returns_data}),
+                        changes_data,
+                        pd.DataFrame(data={ticker: ticker_changes_data}),
                     ],
                     ignore_index=False,
                     axis=1,
@@ -89,5 +89,5 @@ class YfinanceDataProvider:
         else:
             if isinstance(tickers, list):
                 tickers = tickers[0]
-            return pd.DataFrame(data={tickers: extract_returns_from_dataframe(data=data)})
-        return returns_data
+            return pd.DataFrame(data={tickers: extract_changes_from_dataframe(data=data)})
+        return changes_data
