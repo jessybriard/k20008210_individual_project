@@ -17,7 +17,9 @@ from src.tools.statistical_evaluation import ClassificationEvaluation
 from src.tools.yfinance_data_provider import YfinanceDataProvider
 
 
-def evaluate_and_compare(forex_ticker: str, comdty_tickers: List[str], model, nb_samples: int = 100) -> None:
+def evaluate_and_compare_classification(
+    forex_ticker: str, comdty_tickers: List[str], model, nb_samples: int = 100
+) -> None:
     """Compare the performance of individual and sector approach for a pair of forex ticker and commodities
     ticker(s), and a choice of Classification model. The method uses Monte-Carlo Cross-Validation to estimate the
     accuracy of predicting (discrete) hourly returns for both approaches. Then, for both the 'individual' and the
