@@ -7,6 +7,8 @@ from functools import reduce
 from operator import add
 from typing import List
 
+from sklearn.metrics import mean_absolute_error
+
 from src.tools.constants import PriceAttribute
 from src.tools.hypothesis_testing import lilliefors_test, one_sample_t_test, two_sample_t_test
 from src.tools.labeled_data_builder.monte_carlo_cross_validation import generate_train_test_sample
@@ -78,5 +80,58 @@ def evaluate_and_compare_classification(
 
     two_sample_t_test_results = two_sample_t_test(
         sample_1=accuracies["individual"], sample_2=accuracies["sector"], confidence_level=0.95
+    )
+    print(f"\nTwo-sample T-test between Individual and Sector approaches: {two_sample_t_test_results}")
+
+
+def evaluate_and_compare_regression(
+    attribute: PriceAttribute, forex_ticker: str, comdty_tickers: List[str], model, nb_samples: int = 100
+) -> None:
+    """Compare the performance of individual and sector approach for a pair of forex ticker and commodities
+    ticker(s), and a choice of Regression model, for a selected price attribute ('Close', 'High', 'Low'). The method
+    uses Monte-Carlo Cross-Validation to estimate the Mean-Absolute-Error of predicting (continous) hourly changes of
+    the selected price attribute for both approaches. Then, for both the 'individual' and the 'sector' approach, using
+    the results from these samples, hypothesis testing is conducted. First, the Lilliefors test is conducted to
+    determine if the results come from a Gaussian (normal) distribution, at 95% confidence. Then, two-sample T-test is
+    conducted to determine if the difference in Mean-Absolute-Error between the 'individual' and 'sector' approaches is
+    statistically significant, at 95% confidence.
+
+    Args:
+        attribute (PriceAttribute): The price attribute to predict using Regression.
+        forex_ticker (str): The ticker for the foreign exchange asset we want to predict for.
+        comdty_tickers (List[str]): The ticker(s) for the commodities asset(s) we want to use as features to predict the
+            foreign exchange asset.
+        model: Instance of a scikit-learn Regression model, supporting methods fit() and predict().
+        nb_samples (int): The number of samples to generate from the labeled data, using Monte-Carlo Cross-Validation.
+
+    """
+
+    features_length = 5
+    data = YfinanceDataProvider.get_hourly_changes(attribute=attribute, tickers=comdty_tickers + [forex_ticker])
+    labeled_data = create_labeled_data(
+        ticker_label=forex_ticker,
+        tickers_features=comdty_tickers + [forex_ticker],
+        data=data,
+        features_length=features_length,
+    )
+
+    errors = {"individual": [], "sector": []}
+    for i in range(nb_samples):
+        train_data, test_data = generate_train_test_sample(data=labeled_data, train_percentage=0.8)
+        for approach in ["individual", "sector"]:
+            model.fit(list(train_data[f"features_{approach}"].values), list(train_data["label_regression"].values))
+            predictions = model.predict(list(test_data[f"features_{approach}"].values))
+            errors[approach].append(mean_absolute_error(y_true=list(test_data["label_regression"]), y_pred=predictions))
+
+    print("\nIndividual approach")
+    print(f"Mean MAE: {reduce(add, errors['individual']) / len(errors['individual'])}")
+    print(f"Lilliefors test: {lilliefors_test(data=errors['individual'])}")
+
+    print("\nSector approach")
+    print(f"Mean MAE: {reduce(add, errors['sector']) / len(errors['sector'])}")
+    print(f"Lilliefors test: {lilliefors_test(data=errors['sector'])}")
+
+    two_sample_t_test_results = two_sample_t_test(
+        sample_1=errors["individual"], sample_2=errors["sector"], confidence_level=0.95
     )
     print(f"\nTwo-sample T-test between Individual and Sector approaches: {two_sample_t_test_results}")
