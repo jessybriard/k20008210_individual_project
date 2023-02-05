@@ -52,22 +52,25 @@ class YfinanceDataProvider:
 
     @staticmethod
     def get_hourly_changes(
-        attribute: PriceAttribute,
-        tickers: Union[str, List[str]],
+        attributes: List[PriceAttribute],
+        tickers: List[str],
         period: Union[YfinancePeriod, str] = YfinancePeriod.SEVEN_HUNDRED_TWENTY_NINE_DAYS,
     ) -> pd.DataFrame:
         """Get historical hourly prices for tickers, from Yahoo Finance, and calculate hourly changes for the selected
         price attribute.
 
         Args:
-            attribute (PriceAttribute): The price attribute (column) to retrieve hourly data for.
-            tickers (Union[str, List[str]]): The ticker for the asset(s) to retrieve hourly historical prices for.
+            attributes (List[PriceAttribute]): The price attribute(s) (column(s)) to retrieve hourly data for.
+            tickers (List[str]): The ticker for the asset(s) to retrieve hourly historical prices for.
             period (Union[YfinancePeriod, str]): The period of the time series.
 
         Returns:
             changes_data (pd.DataFrame): The calculated hourly changes (percentage) time series.
 
         """
+
+        if not attributes:
+            raise ValueError("Parameter 'attributes' cannot be empty.")
 
         data = YfinanceDataProvider.get_data(
             tickers=tickers,
@@ -76,20 +79,17 @@ class YfinanceDataProvider:
             group_by=YfinanceGroupBy.TICKER,
         )
 
-        if isinstance(tickers, list) and len(tickers) > 1:
-            changes_data = pd.DataFrame()
-            for ticker in tickers:
-                ticker_changes_data = extract_changes_from_dataframe(attribute=attribute, data=data[ticker])
+        changes_data = pd.DataFrame()
+        for ticker in tickers:
+            ticker_data = data[ticker] if len(tickers) > 1 else data
+            for attribute in attributes:
+                ticker_changes_data = extract_changes_from_dataframe(attribute=attribute, data=ticker_data)
                 changes_data = pd.concat(
                     [
                         changes_data,
-                        pd.DataFrame(data={ticker: ticker_changes_data}),
+                        pd.DataFrame(data={(ticker, attribute.value): ticker_changes_data}),
                     ],
                     ignore_index=False,
                     axis=1,
                 )
-        else:
-            if isinstance(tickers, list):
-                tickers = tickers[0]
-            return pd.DataFrame(data={tickers: extract_changes_from_dataframe(attribute=attribute, data=data)})
         return changes_data

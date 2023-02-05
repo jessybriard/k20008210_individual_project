@@ -18,7 +18,7 @@ from src.tools.yfinance_data_provider import YfinanceDataProvider
 
 
 def evaluate_and_compare_classification(
-    forex_ticker: str, comdty_tickers: List[str], model, nb_samples: int = 100
+    forex_ticker: str, comdty_tickers: List[str], model, use_close_high_low: bool = False, nb_samples: int = 100
 ) -> None:
     """Compare the performance of individual and sector approach for a pair of forex ticker and commodities
     ticker(s), and a choice of Classification model. The method uses Monte-Carlo Cross-Validation to estimate the
@@ -36,15 +36,21 @@ def evaluate_and_compare_classification(
         comdty_tickers (List[str]): The ticker(s) for the commodities asset(s) we want to use as features to predict the
             foreign exchange asset.
         model: Instance of a scikit-learn Classification model, supporting methods fit() and predict().
+        use_close_high_low (bool): Whether to use hourly changes from the 'High' and 'Low' columns into the features, in
+            addition to the 'Close' data.
         nb_samples (int): The number of samples to generate from the labeled data, using Monte-Carlo Cross-Validation.
 
     """
 
     features_length = 5
-    data = YfinanceDataProvider.get_hourly_changes(
-        attribute=PriceAttribute.CLOSE, tickers=comdty_tickers + [forex_ticker]
+    attributes = (
+        [PriceAttribute.CLOSE, PriceAttribute.HIGH, PriceAttribute.LOW]
+        if use_close_high_low
+        else [PriceAttribute.CLOSE]
     )
+    data = YfinanceDataProvider.get_hourly_changes(attributes=attributes, tickers=comdty_tickers + [forex_ticker])
     labeled_data = create_labeled_data(
+        attribute_label=PriceAttribute.CLOSE,
         ticker_label=forex_ticker,
         tickers_features=comdty_tickers + [forex_ticker],
         data=data,
@@ -85,7 +91,12 @@ def evaluate_and_compare_classification(
 
 
 def evaluate_and_compare_regression(
-    attribute: PriceAttribute, forex_ticker: str, comdty_tickers: List[str], model, nb_samples: int = 100
+    attribute: PriceAttribute,
+    forex_ticker: str,
+    comdty_tickers: List[str],
+    model,
+    use_close_high_low: bool = False,
+    nb_samples: int = 100,
 ) -> None:
     """Compare the performance of individual and sector approach for a pair of forex ticker and commodities
     ticker(s), and a choice of Regression model, for a selected price attribute ('Close', 'High', 'Low'). The method
@@ -102,13 +113,17 @@ def evaluate_and_compare_regression(
         comdty_tickers (List[str]): The ticker(s) for the commodities asset(s) we want to use as features to predict the
             foreign exchange asset.
         model: Instance of a scikit-learn Regression model, supporting methods fit() and predict().
+        use_close_high_low (bool): Whether to use hourly changes from all 'Close', 'High' and 'Low' columns into the
+            features, instead of the only predicted attribute.
         nb_samples (int): The number of samples to generate from the labeled data, using Monte-Carlo Cross-Validation.
 
     """
 
     features_length = 5
-    data = YfinanceDataProvider.get_hourly_changes(attribute=attribute, tickers=comdty_tickers + [forex_ticker])
+    attributes = [PriceAttribute.CLOSE, PriceAttribute.HIGH, PriceAttribute.LOW] if use_close_high_low else [attribute]
+    data = YfinanceDataProvider.get_hourly_changes(attributes=attributes, tickers=comdty_tickers + [forex_ticker])
     labeled_data = create_labeled_data(
+        attribute_label=attribute,
         ticker_label=forex_ticker,
         tickers_features=comdty_tickers + [forex_ticker],
         data=data,
