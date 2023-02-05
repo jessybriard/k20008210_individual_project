@@ -5,11 +5,16 @@ from typing import List
 
 import pandas as pd
 
+from src.tools.constants import PriceAttribute
 from src.tools.labeled_data_builder.balance_data import undersample
 
 
 def create_labeled_data(
-    ticker_label: str, tickers_features: List[str], data: pd.DataFrame, features_length: int
+    attribute_label: PriceAttribute,
+    ticker_label: str,
+    tickers_features: List[str],
+    data: pd.DataFrame,
+    features_length: int,
 ) -> pd.DataFrame:
     """Create labeled data for time series forecasting, using given historical data for a ticker, using features_length
     previous values in the time series as features_individual and features_sector and the next value as label. We build
@@ -17,6 +22,7 @@ def create_labeled_data(
     fairer comparison. The data is then balanced using under-sampling.
 
     Args:
+        attribute_label (PriceAttribute): The price attribute we want to predict for (the label).
         ticker_label (str): The code for the asset we want to predict for (the label).
         tickers_features (List[str]): The codes for the assets we want to use as features_sector for the prediction.
         data (pd.DataFrame): The historical time series for the tickers.
@@ -28,10 +34,13 @@ def create_labeled_data(
 
     """
 
-    if ticker_label not in data.columns:
-        raise ValueError("Parameter 'ticker_label' must represent a valid column in the 'data' provided as parameter.")
+    if (ticker_label, attribute_label.value) not in data.columns:
+        raise ValueError(
+            "Parameters 'ticker_label' and 'attribute_label' must represent a valid column in the 'data' "
+            "provided as parameter."
+        )
 
-    if not tickers_features or not set(data.columns).issuperset(set(tickers_features)):
+    if not tickers_features or not {column[0] for column in data.columns}.issuperset(set(tickers_features)):
         raise ValueError(
             "Parameter 'tickers_features' must represent valid columns in the 'data' provided as parameter."
         )
@@ -49,14 +58,14 @@ def create_labeled_data(
     true_return = []
     for i in range(len(data) - features_length):
         features_data_slice = data[tickers_features].iloc[i : i + features_length]
-        if not math.isnan(data[ticker_label].iloc[i + features_length]) and True not in [
+        if not math.isnan(data[(ticker_label, attribute_label.value)].iloc[i + features_length]) and True not in [
             math.isnan(value) for value in features_data_slice.values.flatten()
         ]:
             timestamp.append(data.index[i + features_length])
-            features_individual.append(list(features_data_slice[ticker_label].values))
+            features_individual.append(list(features_data_slice[ticker_label].values.flatten()))
             features_sector.append(list(features_data_slice.values.flatten()))
-            label.append(data[ticker_label].iloc[i + features_length] > 0)
-            true_return.append(data[ticker_label].iloc[i + features_length])
+            label.append(data[(ticker_label, attribute_label.value)].iloc[i + features_length] > 0)
+            true_return.append(data[(ticker_label, attribute_label.value)].iloc[i + features_length])
     labeled_data = pd.DataFrame(
         data={
             "timestamp": timestamp,
