@@ -89,7 +89,7 @@ if __name__ == "__main__":
     ]
 
     for column_commodity, column_forex, correlation_threshold in columns:
-        print(f"\n{column_commodity} -> {column_forex}\n")
+        print(f"\n{column_commodity.value} -> {column_forex.value}\n")
 
         correlations = correlation_analysis_lists_cardinal_product(
             list_ticker1=commodity_list,
