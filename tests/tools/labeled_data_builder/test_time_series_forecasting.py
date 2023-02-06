@@ -692,3 +692,208 @@ class TestLabeledDataBuilderTimeSeriesForecasting(TestCase):
         ).set_index("timestamp")
         expected_labeled_data_2.index = pd.DatetimeIndex(expected_labeled_data_2.index)
         self.assertTrue(expected_labeled_data_1.equals(labeled_data) or expected_labeled_data_2.equals(labeled_data))
+
+    def test_create_labeled_data_close_attribute_undersamples_if_unbalanced_data(self):
+
+        # Arrange
+        attribute_label = PriceAttribute.CLOSE
+        ticker_label = "EUR=X"
+        tickers_features = ["CL=F", "EUR=X"]
+        data = pd.DataFrame(
+            data={
+                ("CL=F", "Close"): [0.1, -0.06, -0.05, 0.05, 0.2, -0.1],
+                ("CL=F", "High"): [0.2, 0.12, 0.1, 0.1, 0.4, 0.2],
+                ("EUR=X", "Close"): [-0.1, 0.08, -0.04, 0.22, -0.12, 0.05],
+                ("EUR=X", "High"): [0.2, 0.16, 0.08, 0.44, 0.24, 0.1],
+            }
+        )
+        data.index = pd.DatetimeIndex(
+            pd.Series(
+                data=["2022-11-07", "2022-11-08", "2022-11-09", "2022-11-10", "2022-11-11", "2022-11-14"], name="Date"
+            )
+        )
+        features_length = 3
+
+        # Act
+        labeled_data = create_labeled_data(
+            attribute_label=attribute_label,
+            ticker_label=ticker_label,
+            tickers_features=tickers_features,
+            data=data,
+            features_length=features_length,
+        )
+
+        # Assert
+        expected_labeled_data_1 = pd.DataFrame(
+            data={
+                "timestamp": ["2022-11-10", "2022-11-11"],
+                "features_individual": [[-0.1, 0.2, 0.08, 0.16, -0.04, 0.08], [0.08, 0.16, -0.04, 0.08, 0.22, 0.44]],
+                "features_sector": [
+                    [0.1, 0.2, -0.1, 0.2, -0.06, 0.12, 0.08, 0.16, -0.05, 0.1, -0.04, 0.08],
+                    [-0.06, 0.12, 0.08, 0.16, -0.05, 0.1, -0.04, 0.08, 0.05, 0.1, 0.22, 0.44],
+                ],
+                "label_classification": [True, False],
+                "label_regression": [0.22, -0.12],
+            }
+        ).set_index("timestamp")
+        expected_labeled_data_1.index = pd.DatetimeIndex(expected_labeled_data_1.index)
+        expected_labeled_data_2 = pd.DataFrame(
+            data={
+                "timestamp": ["2022-11-11", "2022-11-14"],
+                "features_individual": [[0.08, 0.16, -0.04, 0.08, 0.22, 0.44], [-0.04, 0.08, 0.22, 0.44, -0.12, 0.24]],
+                "features_sector": [
+                    [-0.06, 0.12, 0.08, 0.16, -0.05, 0.1, -0.04, 0.08, 0.05, 0.1, 0.22, 0.44],
+                    [-0.05, 0.1, -0.04, 0.08, 0.05, 0.1, 0.22, 0.44, 0.2, 0.4, -0.12, 0.24],
+                ],
+                "label_classification": [False, True],
+                "label_regression": [-0.12, 0.05],
+            }
+        ).set_index("timestamp")
+        expected_labeled_data_2.index = pd.DatetimeIndex(expected_labeled_data_2.index)
+        self.assertTrue(expected_labeled_data_1.equals(labeled_data) or expected_labeled_data_2.equals(labeled_data))
+
+    def test_create_labeled_data_close_attribute_does_not_undersample_if_balanced_data(self):
+
+        # Arrange
+        attribute_label = PriceAttribute.CLOSE
+        ticker_label = "EUR=X"
+        tickers_features = ["CL=F", "EUR=X"]
+        data = pd.DataFrame(
+            data={
+                ("CL=F", "Close"): [0.1, -0.06, -0.05, 0.05, 0.2],
+                ("CL=F", "High"): [0.2, 0.12, 0.1, 0.1, 0.4],
+                ("EUR=X", "Close"): [-0.1, 0.08, -0.04, 0.22, -0.12],
+                ("EUR=X", "High"): [0.2, 0.16, 0.08, 0.44, 0.24],
+            }
+        )
+        data.index = pd.DatetimeIndex(
+            pd.Series(data=["2022-11-07", "2022-11-08", "2022-11-09", "2022-11-10", "2022-11-11"], name="Date")
+        )
+        features_length = 3
+
+        # Act
+        labeled_data = create_labeled_data(
+            attribute_label=attribute_label,
+            ticker_label=ticker_label,
+            tickers_features=tickers_features,
+            data=data,
+            features_length=features_length,
+        )
+
+        # Assert
+        expected_labeled_data = pd.DataFrame(
+            data={
+                "timestamp": ["2022-11-10", "2022-11-11"],
+                "features_individual": [[-0.1, 0.2, 0.08, 0.16, -0.04, 0.08], [0.08, 0.16, -0.04, 0.08, 0.22, 0.44]],
+                "features_sector": [
+                    [0.1, 0.2, -0.1, 0.2, -0.06, 0.12, 0.08, 0.16, -0.05, 0.1, -0.04, 0.08],
+                    [-0.06, 0.12, 0.08, 0.16, -0.05, 0.1, -0.04, 0.08, 0.05, 0.1, 0.22, 0.44],
+                ],
+                "label_classification": [True, False],
+                "label_regression": [0.22, -0.12],
+            }
+        ).set_index("timestamp")
+        expected_labeled_data.index = pd.DatetimeIndex(expected_labeled_data.index)
+        self.assertTrue(expected_labeled_data.equals(labeled_data))
+
+    def test_create_labeled_data_high_attribute_does_not_undersample(self):
+
+        # Arrange
+        attribute_label = PriceAttribute.HIGH
+        ticker_label = "EUR=X"
+        tickers_features = ["CL=F", "EUR=X"]
+        data = pd.DataFrame(
+            data={
+                ("CL=F", "Close"): [0.1, -0.06, -0.05, 0.05, 0.2, -0.1],
+                ("CL=F", "High"): [0.2, 0.12, 0.1, 0.1, 0.4, 0.2],
+                ("EUR=X", "Close"): [-0.1, 0.08, -0.04, 0.22, -0.12, 0.05],
+                ("EUR=X", "High"): [0.2, 0.16, 0.08, 0.44, 0.0, 0.1],
+            }
+        )
+        data.index = pd.DatetimeIndex(
+            pd.Series(
+                data=["2022-11-07", "2022-11-08", "2022-11-09", "2022-11-10", "2022-11-11", "2022-11-14"], name="Date"
+            )
+        )
+        features_length = 3
+
+        # Act
+        labeled_data = create_labeled_data(
+            attribute_label=attribute_label,
+            ticker_label=ticker_label,
+            tickers_features=tickers_features,
+            data=data,
+            features_length=features_length,
+        )
+
+        # Assert
+        expected_labeled_data = pd.DataFrame(
+            data={
+                "timestamp": ["2022-11-10", "2022-11-11", "2022-11-14"],
+                "features_individual": [
+                    [-0.1, 0.2, 0.08, 0.16, -0.04, 0.08],
+                    [0.08, 0.16, -0.04, 0.08, 0.22, 0.44],
+                    [-0.04, 0.08, 0.22, 0.44, -0.12, 0.0],
+                ],
+                "features_sector": [
+                    [0.1, 0.2, -0.1, 0.2, -0.06, 0.12, 0.08, 0.16, -0.05, 0.1, -0.04, 0.08],
+                    [-0.06, 0.12, 0.08, 0.16, -0.05, 0.1, -0.04, 0.08, 0.05, 0.1, 0.22, 0.44],
+                    [-0.05, 0.1, -0.04, 0.08, 0.05, 0.1, 0.22, 0.44, 0.2, 0.4, -0.12, 0.0],
+                ],
+                "label_classification": [True, False, True],
+                "label_regression": [0.44, 0.0, 0.1],
+            }
+        ).set_index("timestamp")
+        expected_labeled_data.index = pd.DatetimeIndex(expected_labeled_data.index)
+        self.assertTrue(expected_labeled_data.equals(labeled_data))
+
+    def test_create_labeled_data_low_attribute_does_not_undersample(self):
+
+        # Arrange
+        attribute_label = PriceAttribute.LOW
+        ticker_label = "EUR=X"
+        tickers_features = ["CL=F", "EUR=X"]
+        data = pd.DataFrame(
+            data={
+                ("CL=F", "Close"): [0.1, -0.06, -0.05, 0.05, 0.2, -0.1],
+                ("CL=F", "Low"): [-0.2, -0.12, -0.1, -0.1, -0.4, -0.2],
+                ("EUR=X", "Close"): [-0.1, 0.08, -0.04, 0.22, -0.12, 0.05],
+                ("EUR=X", "Low"): [-0.2, -0.16, -0.08, -0.44, 0.0, -0.1],
+            }
+        )
+        data.index = pd.DatetimeIndex(
+            pd.Series(
+                data=["2022-11-07", "2022-11-08", "2022-11-09", "2022-11-10", "2022-11-11", "2022-11-14"], name="Date"
+            )
+        )
+        features_length = 3
+
+        # Act
+        labeled_data = create_labeled_data(
+            attribute_label=attribute_label,
+            ticker_label=ticker_label,
+            tickers_features=tickers_features,
+            data=data,
+            features_length=features_length,
+        )
+
+        # Assert
+        expected_labeled_data = pd.DataFrame(
+            data={
+                "timestamp": ["2022-11-10", "2022-11-11", "2022-11-14"],
+                "features_individual": [
+                    [-0.1, -0.2, 0.08, -0.16, -0.04, -0.08],
+                    [0.08, -0.16, -0.04, -0.08, 0.22, -0.44],
+                    [-0.04, -0.08, 0.22, -0.44, -0.12, 0.0],
+                ],
+                "features_sector": [
+                    [0.1, -0.2, -0.1, -0.2, -0.06, -0.12, 0.08, -0.16, -0.05, -0.1, -0.04, -0.08],
+                    [-0.06, -0.12, 0.08, -0.16, -0.05, -0.1, -0.04, -0.08, 0.05, -0.1, 0.22, -0.44],
+                    [-0.05, -0.1, -0.04, -0.08, 0.05, -0.1, 0.22, -0.44, 0.2, -0.4, -0.12, 0.0],
+                ],
+                "label_classification": [False, False, False],
+                "label_regression": [-0.44, 0.0, -0.1],
+            }
+        ).set_index("timestamp")
+        expected_labeled_data.index = pd.DatetimeIndex(expected_labeled_data.index)
+        self.assertTrue(expected_labeled_data.equals(labeled_data))
