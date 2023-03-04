@@ -7,6 +7,7 @@ from functools import reduce
 from operator import add
 from typing import List
 
+from numpy import std
 from sklearn.metrics import mean_absolute_error
 
 from src.tools.constants import PriceAttribute
@@ -70,6 +71,7 @@ def evaluate_and_compare_classification(
 
     print("\nIndividual approach")
     print(f"Mean accuracy: {reduce(add, accuracies['individual']) / len(accuracies['individual'])}")
+    print(f"Standard deviation (accuracy): {std(accuracies['individual'])}")
     print(f"Lilliefors test: {lilliefors_test(data=accuracies['individual'])}")
     print(
         f"One-sample T-test against random guessing: "
@@ -78,6 +80,7 @@ def evaluate_and_compare_classification(
 
     print("\nSector approach")
     print(f"Mean accuracy: {reduce(add, accuracies['sector']) / len(accuracies['sector'])}")
+    print(f"Standard deviation (accuracy): {std(accuracies['sector'])}")
     print(f"Lilliefors test: {lilliefors_test(data=accuracies['sector'])}")
     print(
         f"One-sample T-test against random guessing: "
@@ -140,10 +143,12 @@ def evaluate_and_compare_regression(
 
     print("\nIndividual approach")
     print(f"Mean MAE: {reduce(add, errors['individual']) / len(errors['individual'])}")
+    print(f"Standard deviation (MAE): {std(errors['individual'])}")
     print(f"Lilliefors test: {lilliefors_test(data=errors['individual'])}")
 
     print("\nSector approach")
     print(f"Mean MAE: {reduce(add, errors['sector']) / len(errors['sector'])}")
+    print(f"Standard deviation (MAE): {std(errors['sector'])}")
     print(f"Lilliefors test: {lilliefors_test(data=errors['sector'])}")
 
     two_sample_t_test_results = two_sample_t_test(
