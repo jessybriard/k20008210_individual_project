@@ -1,7 +1,8 @@
 """Common helper methods for other classes."""
 
 import math
-from typing import Union
+from datetime import timedelta
+from typing import List, Union
 
 import pandas as pd
 
@@ -34,3 +35,17 @@ def extract_changes_from_dataframe(attribute: PriceAttribute, data: pd.DataFrame
         return (row[attribute.value] - row["Open"]) / row["Open"]
 
     return data.apply(lambda row: row_change_value(row), axis=1)
+
+
+def consecutive_timestamps(timestamps: List[pd.Timestamp]) -> bool:
+    """Check if the given timestamps are consecutive (consecutive timestamps separated by 1 hour).
+
+    Args:
+        timestamps (List[pd.Timestamp]): The list of timestamps to check.
+
+    Returns:
+        timestamps_are_consecutive (bool): True if all the timestamps are consecutive, False otherwise.
+
+    """
+
+    return len({timestamps[i] - (timedelta(hours=1) * i) for i in range(len(timestamps))}) <= 1
