@@ -6,6 +6,7 @@ from typing import List
 import pandas as pd
 
 from src.tools.constants import PriceAttribute
+from src.tools.helper_methods import consecutive_rows
 from src.tools.labeled_data_builder.balance_data import undersample
 
 
@@ -58,9 +59,11 @@ def create_labeled_data(
     true_return = []
     for i in range(len(data) - features_length):
         features_data_slice = data[tickers_features].iloc[i : i + features_length]
-        if not math.isnan(data[(ticker_label, attribute_label.value)].iloc[i + features_length]) and True not in [
-            math.isnan(value) for value in features_data_slice.values.flatten()
-        ]:
+        if (
+            not math.isnan(data[(ticker_label, attribute_label.value)].iloc[i + features_length])
+            and True not in [math.isnan(value) for value in features_data_slice.values.flatten()]
+            and consecutive_rows(data[tickers_features].iloc[i : i + features_length + 1])
+        ):
             timestamp.append(data.index[i + features_length])
             features_individual.append(list(features_data_slice[ticker_label].values.flatten()))
             features_sector.append(list(features_data_slice.values.flatten()))
