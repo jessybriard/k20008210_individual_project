@@ -2,7 +2,7 @@
 
 import math
 from datetime import timedelta
-from typing import Union
+from typing import List, Union
 
 import pandas as pd
 
@@ -37,15 +37,15 @@ def extract_changes_from_dataframe(attribute: PriceAttribute, data: pd.DataFrame
     return data.apply(lambda row: row_change_value(row), axis=1)
 
 
-def consecutive_rows(data_slice: pd.DataFrame) -> bool:
-    """Check if the rows in the given data slice are consecutive (consecutive timestamps separated by 1 hour).
+def consecutive_timestamps(timestamps: List[pd.Timestamp]) -> bool:
+    """Check if the given timestamps are consecutive (consecutive timestamps separated by 1 hour).
 
     Args:
-        data_slice (pd.DataFrame): The data slice to check.
+        timestamps (List[pd.Timestamp]): The list of timestamps to check.
 
     Returns:
-        rows_are_consecutive (bool): True if all rows in the data_slice are consecutive, False otherwise.
+        timestamps_are_consecutive (bool): True if all the timestamps are consecutive, False otherwise.
 
     """
 
-    return len({data_slice.index[i] - (timedelta(hours=1) * i) for i in range(len(data_slice))}) == 1
+    return len({timestamps[i] - (timedelta(hours=1) * i) for i in range(len(timestamps))}) == 1
