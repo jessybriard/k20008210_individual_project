@@ -1058,3 +1058,55 @@ class TestLabeledDataBuilderTimeSeriesForecasting(TestCase):
         ).set_index("timestamp")
         expected_labeled_data.index = pd.DatetimeIndex(expected_labeled_data.index)
         self.assertTrue(expected_labeled_data.equals(labeled_data))
+
+    def test_create_labeled_data_contains_break_in_consecutiveness(self):
+
+        # Arrange
+        attribute_label = PriceAttribute.CLOSE
+        ticker_label = "EUR=X"
+        tickers_features = ["CL=F", "EUR=X"]
+        data = pd.DataFrame(
+            data={
+                ("CL=F", "Close"): [0.1, -0.06, -0.05, 0.05, 0.2, -0.1],
+                ("EUR=X", "Close"): [-0.1, 0.08, -0.04, 0.22, -0.12, 0.05],
+            }
+        )
+        data.index = pd.DatetimeIndex(
+            pd.Series(
+                data=[
+                    "2022-11-07 09:00",
+                    "2022-11-07 11:00",
+                    "2022-11-07 12:00",
+                    "2022-11-07 13:00",
+                    "2022-11-07 14:00",
+                    "2022-11-07 15:00",
+                ],
+                name="Date",
+            )
+        )
+        features_length = 3
+
+        # Act
+        labeled_data = create_labeled_data(
+            attribute_label=attribute_label,
+            ticker_label=ticker_label,
+            tickers_features=tickers_features,
+            data=data,
+            features_length=features_length,
+        )
+
+        # Assert
+        expected_labeled_data = pd.DataFrame(
+            data={
+                "timestamp": ["2022-11-07 14:00", "2022-11-07 15:00"],
+                "features_individual": [[0.08, -0.04, 0.22], [-0.04, 0.22, -0.12]],
+                "features_sector": [
+                    [-0.06, 0.08, -0.05, -0.04, 0.05, 0.22],
+                    [-0.05, -0.04, 0.05, 0.22, 0.2, -0.12],
+                ],
+                "label_classification": [False, True],
+                "label_regression": [-0.12, 0.05],
+            }
+        ).set_index("timestamp")
+        expected_labeled_data.index = pd.DatetimeIndex(expected_labeled_data.index)
+        self.assertTrue(expected_labeled_data.equals(labeled_data) or expected_labeled_data.equals(labeled_data))

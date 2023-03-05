@@ -48,4 +48,4 @@ def consecutive_timestamps(timestamps: List[pd.Timestamp]) -> bool:
 
     """
 
-    return len({timestamps[i] - (timedelta(hours=1) * i) for i in range(len(timestamps))}) == 1
+    return len({timestamps[i] - (timedelta(hours=1) * i) for i in range(len(timestamps))}) <= 1

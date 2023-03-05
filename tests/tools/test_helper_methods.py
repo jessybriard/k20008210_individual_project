@@ -6,7 +6,7 @@ from unittest import TestCase
 import pandas as pd
 
 from src.tools.constants import PriceAttribute
-from src.tools.helper_methods import extract_changes_from_dataframe
+from src.tools.helper_methods import consecutive_timestamps, extract_changes_from_dataframe
 
 
 class TestHelperMethods(TestCase):
@@ -145,3 +145,117 @@ class TestHelperMethods(TestCase):
         with self.assertRaises(ValueError) as e:
             extract_changes_from_dataframe(attribute=attribute, data=data)
         self.assertEqual("Cannot extract changes for price attributes 'Open' or 'Volume'.", str(e.exception))
+
+    # Tests for method consecutive_timestamps()
+
+    def test_consecutive_timestamps_empty_timestamps_list(self):
+
+        # Arrange
+        timestamps = []
+
+        # Act
+        timestamps_are_consecutive = consecutive_timestamps(timestamps=timestamps)
+
+        # Assert
+        self.assertTrue(timestamps_are_consecutive)
+
+    def test_consecutive_timestamps_timestamps_list_contains_one_element(self):
+
+        # Arrange
+        timestamps = [pd.Timestamp("2022-11-07 10:00")]
+
+        # Act
+        timestamps_are_consecutive = consecutive_timestamps(timestamps=timestamps)
+
+        # Assert
+        self.assertTrue(timestamps_are_consecutive)
+
+    def test_consecutive_timestamps_consecutive(self):
+
+        # Arrange
+        timestamps = [
+            pd.Timestamp("2022-11-07 10:00"),
+            pd.Timestamp("2022-11-07 11:00"),
+            pd.Timestamp("2022-11-07 12:00"),
+            pd.Timestamp("2022-11-07 13:00"),
+            pd.Timestamp("2022-11-07 14:00"),
+            pd.Timestamp("2022-11-07 15:00"),
+        ]
+
+        # Act
+        timestamps_are_consecutive = consecutive_timestamps(timestamps=timestamps)
+
+        # Assert
+        self.assertTrue(timestamps_are_consecutive)
+
+    def test_consecutive_timestamps_consecutive_but_reverse_order(self):
+
+        # Arrange
+        timestamps = [
+            pd.Timestamp("2022-11-07 15:00"),
+            pd.Timestamp("2022-11-07 14:00"),
+            pd.Timestamp("2022-11-07 13:00"),
+            pd.Timestamp("2022-11-07 12:00"),
+            pd.Timestamp("2022-11-07 11:00"),
+            pd.Timestamp("2022-11-07 10:00"),
+        ]
+
+        # Act
+        timestamps_are_consecutive = consecutive_timestamps(timestamps=timestamps)
+
+        # Assert
+        self.assertFalse(timestamps_are_consecutive)
+
+    def test_consecutive_timestamps_first_timestamp_not_consecutive(self):
+
+        # Arrange
+        timestamps = [
+            pd.Timestamp("2022-11-07 09:00"),
+            pd.Timestamp("2022-11-07 11:00"),
+            pd.Timestamp("2022-11-07 12:00"),
+            pd.Timestamp("2022-11-07 13:00"),
+            pd.Timestamp("2022-11-07 14:00"),
+            pd.Timestamp("2022-11-07 15:00"),
+        ]
+
+        # Act
+        timestamps_are_consecutive = consecutive_timestamps(timestamps=timestamps)
+
+        # Assert
+        self.assertFalse(timestamps_are_consecutive)
+
+    def test_consecutive_timestamps_last_timestamp_not_consecutive(self):
+
+        # Arrange
+        timestamps = [
+            pd.Timestamp("2022-11-07 10:00"),
+            pd.Timestamp("2022-11-07 11:00"),
+            pd.Timestamp("2022-11-07 12:00"),
+            pd.Timestamp("2022-11-07 13:00"),
+            pd.Timestamp("2022-11-07 14:00"),
+            pd.Timestamp("2022-11-07 16:00"),
+        ]
+
+        # Act
+        timestamps_are_consecutive = consecutive_timestamps(timestamps=timestamps)
+
+        # Assert
+        self.assertFalse(timestamps_are_consecutive)
+
+    def test_consecutive_timestamps_internal_break_in_consecutiveness(self):
+
+        # Arrange
+        timestamps = [
+            pd.Timestamp("2022-11-07 10:00"),
+            pd.Timestamp("2022-11-07 11:00"),
+            pd.Timestamp("2022-11-07 12:00"),
+            pd.Timestamp("2022-11-07 14:00"),
+            pd.Timestamp("2022-11-07 15:00"),
+            pd.Timestamp("2022-11-07 16:00"),
+        ]
+
+        # Act
+        timestamps_are_consecutive = consecutive_timestamps(timestamps=timestamps)
+
+        # Assert
+        self.assertFalse(timestamps_are_consecutive)
