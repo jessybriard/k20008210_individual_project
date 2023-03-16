@@ -6,6 +6,7 @@ from unittest import TestCase
 from unittest.mock import patch
 
 import pandas as pd
+from pandas.testing import assert_frame_equal
 
 from src.tools.constants import PriceAttribute, YfinanceGroupBy, YfinanceInterval, YfinancePeriod
 from src.tools.yfinance_data_provider import YfinanceDataProvider
@@ -325,7 +326,7 @@ class TestYfinanceDataProvider(TestCase):
             expected_changes_series.index, dtype="datetime64[ns, America/New_York]"
         )
         expected_changes_data = pd.DataFrame(data={("CL=F", "Close"): expected_changes_series})
-        self.assertTrue(expected_changes_data.equals(changes_data))
+        assert_frame_equal(left=expected_changes_data, right=changes_data)
 
     @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
     def test_get_hourly_changes_multiple_tickers_and_single_attribute(self, mock_get_data_method):
@@ -377,7 +378,7 @@ class TestYfinanceDataProvider(TestCase):
                 ("EUR=X", "Close"): expected_changes_series_eur,
             }
         )
-        self.assertTrue(expected_changes_data.equals(changes_data))
+        assert_frame_equal(left=expected_changes_data, right=changes_data)
 
     @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
     def test_get_hourly_changes_single_ticker_and_multiple_attributes(self, mock_get_data_method):
@@ -430,7 +431,7 @@ class TestYfinanceDataProvider(TestCase):
         expected_changes_data = pd.DataFrame(
             data={("CL=F", "Close"): expected_changes_series_close, ("CL=F", "High"): expected_changes_series_high}
         )
-        self.assertTrue(expected_changes_data.equals(changes_data))
+        assert_frame_equal(left=expected_changes_data, right=changes_data)
 
     @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
     def test_get_hourly_changes_multiple_tickers_and_multiple_attributes(self, mock_get_data_method):
@@ -508,7 +509,7 @@ class TestYfinanceDataProvider(TestCase):
                 ("EUR=X", "Low"): expected_changes_series_eur_low,
             }
         )
-        self.assertTrue(expected_changes_data.equals(changes_data))
+        assert_frame_equal(left=expected_changes_data, right=changes_data)
 
     @patch("yfinance.download")
     def test_get_hourly_changes_tickers_empty_list(self, mock_download_method):
@@ -574,7 +575,7 @@ class TestYfinanceDataProvider(TestCase):
                 ("EUR=X", "Close"): expected_changes_series_eur,
             }
         )
-        self.assertTrue(expected_changes_data.equals(changes_data))
+        assert_frame_equal(left=expected_changes_data, right=changes_data)
 
     @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
     def test_get_hourly_changes_period_default(self, mock_get_data_method):
@@ -625,7 +626,7 @@ class TestYfinanceDataProvider(TestCase):
                 ("EUR=X", "Close"): expected_changes_series_eur,
             }
         )
-        self.assertTrue(expected_changes_data.equals(changes_data))
+        assert_frame_equal(left=expected_changes_data, right=changes_data)
 
     @patch("src.tools.yfinance_data_provider.YfinanceDataProvider.get_data")
     def test_get_hourly_changes_attributes_is_empty_list(self, mock_get_data_method):

@@ -32,7 +32,7 @@ def extract_changes_from_dataframe(attribute: PriceAttribute, data: pd.DataFrame
     def row_change_value(row: pd.Series) -> Union[bool, float]:
         if math.isnan(row["Open"]) or math.isnan(row[attribute.value]):
             return math.nan
-        return (row[attribute.value] - row["Open"]) / row["Open"]
+        return (row[attribute.value] / row["Open"]) - 1
 
     return data.apply(lambda row: row_change_value(row), axis=1)
 
