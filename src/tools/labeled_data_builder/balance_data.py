@@ -10,7 +10,7 @@ def undersample(labeled_data: pd.DataFrame) -> pd.DataFrame:
     """Balance a classification dataset using under-sampling. We assume binary classification.
 
     Args:
-        labeled_data (pd.DataFrame): The original (unbalanced labeled data).
+        labeled_data (pd.DataFrame): The original (unbalanced) labeled data.
 
     Returns:
         balanced_data (pd.DataFrame): The modified balanced labeled data.
