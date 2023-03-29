@@ -3,11 +3,14 @@ ticker(s), and a choice of Machine Learning model. The method uses Monte-Carlo C
 performance of hourly predictions for both approaches. Then, for both the 'individual' and the 'sector' approach,
 hypothesis testing is conducted on the results aggregated from these samples."""
 
+import time
+from datetime import timedelta
 from functools import reduce
 from operator import add
 from typing import List
 
-from numpy import std
+from numpy import mean, std
+from sklearn.dummy import DummyRegressor
 from sklearn.metrics import mean_absolute_error
 
 from src.tools.constants import PriceAttribute
@@ -58,8 +61,10 @@ def evaluate_and_compare_classification(
         features_length=features_length,
     )
 
+    start_time = time.time()
     accuracies = {"individual": [], "sector": []}
     for i in range(nb_samples):
+        print(f"\n{i}")
         train_data, test_data = generate_train_test_sample(data=labeled_data, train_percentage=0.8)
         for approach in ["individual", "sector"]:
             model.fit(list(train_data[f"features_{approach}"].values), list(train_data["label_classification"].values))
@@ -68,6 +73,9 @@ def evaluate_and_compare_classification(
                 y_true=list(test_data["label_classification"].values), y_predicted=list(predictions)
             )
             accuracies[approach].append(classification_evaluation.accuracy)
+            print(f"{approach}: {classification_evaluation.accuracy}")
+    end_time = time.time()
+    print(f"\nDuration: {timedelta(seconds=end_time - start_time)}")
 
     print("\nIndividual approach")
     print(f"Mean accuracy: {reduce(add, accuracies['individual']) / len(accuracies['individual'])}")
@@ -133,23 +141,43 @@ def evaluate_and_compare_regression(
         features_length=features_length,
     )
 
-    errors = {"individual": [], "sector": []}
+    start_time = time.time()
+    baseline_model = DummyRegressor(strategy="mean")
+    errors = {"individual": [], "sector": [], "baseline": []}
     for i in range(nb_samples):
+        print(f"\n{i}")
         train_data, test_data = generate_train_test_sample(data=labeled_data, train_percentage=0.8)
         for approach in ["individual", "sector"]:
             model.fit(list(train_data[f"features_{approach}"].values), list(train_data["label_regression"].values))
             predictions = model.predict(list(test_data[f"features_{approach}"].values))
             errors[approach].append(mean_absolute_error(y_true=list(test_data["label_regression"]), y_pred=predictions))
+            print(f"{approach}: {errors[approach][-1]}")
+        baseline_model.fit(list(train_data["features_individual"].values), list(train_data["label_regression"].values))
+        predictions = baseline_model.predict(list(test_data["features_individual"].values))
+        errors["baseline"].append(mean_absolute_error(y_true=list(test_data["label_regression"]), y_pred=predictions))
+        print(f"baseline: {errors['baseline'][-1]}")
+    end_time = time.time()
+    print(f"\nDuration: {timedelta(seconds=end_time - start_time)}")
+
+    print(f"\nBaseline mean MAE: {mean(errors['baseline'])}")
 
     print("\nIndividual approach")
     print(f"Mean MAE: {reduce(add, errors['individual']) / len(errors['individual'])}")
     print(f"Standard deviation (MAE): {std(errors['individual'])}")
     print(f"Lilliefors test: {lilliefors_test(data=errors['individual'])}")
+    two_sample_t_test_individual_baseline = two_sample_t_test(
+        sample_1=errors["individual"], sample_2=errors["baseline"], confidence_level=0.95
+    )
+    print(f"Two-sample T-test against Baseline: {two_sample_t_test_individual_baseline}")
 
     print("\nSector approach")
     print(f"Mean MAE: {reduce(add, errors['sector']) / len(errors['sector'])}")
     print(f"Standard deviation (MAE): {std(errors['sector'])}")
     print(f"Lilliefors test: {lilliefors_test(data=errors['sector'])}")
+    two_sample_t_test_sector_baseline = two_sample_t_test(
+        sample_1=errors["sector"], sample_2=errors["baseline"], confidence_level=0.95
+    )
+    print(f"Two-sample T-test against Baseline: {two_sample_t_test_sector_baseline}")
 
     two_sample_t_test_results = two_sample_t_test(
         sample_1=errors["individual"], sample_2=errors["sector"], confidence_level=0.95
