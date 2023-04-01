@@ -32,7 +32,9 @@ class TestHelperMethods(TestCase):
         changes_series = extract_changes_from_dataframe(attribute=attribute, data=data)
 
         # Assert
-        expected_changes_series = pd.Series(data={"2022-11-03": -1 / 89, "2022-11-04": 4 / 88, "2022-11-07": 0.0})
+        expected_changes_series = pd.Series(
+            data={"2022-11-03": 88 / 89 - 1, "2022-11-04": 92 / 88 - 1, "2022-11-07": 0.0}
+        )
         expected_changes_series.index = pd.DatetimeIndex(expected_changes_series.index, name="Date")
         self.assertTrue(expected_changes_series.equals(changes_series))
 
@@ -56,7 +58,7 @@ class TestHelperMethods(TestCase):
         # Assert
         expected_changes_series = pd.Series(
             data={
-                "2022-11-03": -1 / 89,
+                "2022-11-03": 88 / 89 - 1,
                 "2022-11-04": math.nan,
                 "2022-11-07": 0.0,
             }
@@ -84,8 +86,8 @@ class TestHelperMethods(TestCase):
         # Assert
         expected_changes_series = pd.Series(
             data={
-                "2022-11-03": -1 / 89,
-                "2022-11-04": 4 / 88,
+                "2022-11-03": 88 / 89 - 1,
+                "2022-11-04": 92 / 88 - 1,
                 "2022-11-07": math.nan,
             }
         )
