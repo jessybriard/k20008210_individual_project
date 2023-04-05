@@ -121,8 +121,8 @@ def evaluate_and_compare_regression(
     Args:
         attribute (PriceAttribute): The price attribute to predict using Regression.
         forex_ticker (str): The ticker for the foreign exchange asset we want to predict for.
-        comdty_tickers (List[str]): The ticker(s) for the commodities asset(s) we want to use as features to predict the
-            foreign exchange asset.
+        comdty_tickers (List[str]): The ticker(s) for the commodities asset(s) we want to use as features to predict
+            the foreign exchange asset.
         model: Instance of a scikit-learn Regression model, supporting methods fit() and predict().
         use_close_high_low (bool): Whether to use hourly changes from all 'Close', 'High' and 'Low' columns into the
             features, instead of the only predicted attribute.
