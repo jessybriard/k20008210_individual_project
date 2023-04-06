@@ -1,4 +1,4 @@
-"""Methods to build labeled data from a DataFrame for time series forecasting."""
+"""Method to build labeled data from a DataFrame for time series forecasting."""
 
 import math
 from typing import List
