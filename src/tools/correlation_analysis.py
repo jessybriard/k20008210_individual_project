@@ -1,4 +1,4 @@
-"""Method for statistical analysis of the correlation between two tickers."""
+"""Methods for statistical analysis of the correlation between two tickers."""
 
 import math
 from itertools import product

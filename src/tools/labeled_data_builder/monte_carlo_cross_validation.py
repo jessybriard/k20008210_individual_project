@@ -1,4 +1,4 @@
-"""Method(s) to generate simulated samples from a dataset, using Monte-Carlo Cross-Validation."""
+"""Method to generate simulated samples from a dataset, using Monte-Carlo Cross-Validation."""
 
 from random import sample
 from typing import Tuple
