@@ -9,19 +9,27 @@ Predicting Foreign Exchange prices using Commodity prices and AI - Jessy BRIARD
 INSTRUCTIONS TO BUILD AND RUN THE SOFTWARE:
 
 Installation:
-- Download and install Python version 3.8.10 64-bit from https://www.python.org/downloads/release/python-3810/ (Make sure to include pip in the Python installation)
+- Download and install Python version 3.8.10 64-bit (Make sure to include pip in the Python installation):
+    - Windows or MacOS:
+        Download from https://www.python.org/downloads/release/python-3810/
+    - Unix:
+        Run inside a Command-Line Interface: sudo apt-get install python3.8
 - Open a Command-Line Interface
 - Inside the Command-Line Interface:
     - Navigate to the root of the project (using the 'cd' command)
-    - Run the following command to create a Python virtual environment:
-        python -m venv venv
+    - Run one of the following commands to create a Python virtual environment:
+        - python -m venv venv
+        - python3 -m venv venv
     - Run the following command to activate the virtual environment:
         - Windows:
             venv\Scripts\activate.bat
         - MacOS or Unix:
             source venv/bin/activate
     - Run the following command to install the necessary libraries in the Python virtual environment:
-        .\venv\Scripts\python.exe -m pip install -r requirements.txt
+        - Windows:
+            .\venv\Scripts\python.exe -m pip install -r requirements.txt
+        - MacOS or Unix:
+            venv/bin/python -m pip install -r requirements.txt
 
 The following procedures can be followed once the installation is completed.
 
@@ -52,7 +60,10 @@ Run the Foreign Exchange - Commodities Correlation analysis:
         - MacOS or Unix:
             export PYTHONPATH="${PYTHONPATH}:."
     - Run the following command to run the Foreign Exchange - Commodities Correlation analysis:
-        .\venv\Scripts\python.exe src/commodity_forex_correlation_analysis.py
+        - Windows:
+            .\venv\Scripts\python.exe src/commodity_forex_correlation_analysis.py
+        - MacOS or Unix:
+            venv/bin/python src/commodity_forex_correlation_analysis.py
 
 Run Performance Evaluation and Hypothesis Testing:
 - Open a Command-Line Interface
@@ -64,7 +75,10 @@ Run Performance Evaluation and Hypothesis Testing:
         - MacOS or Unix:
             source venv/bin/activate
     - Run the following command to open a Python shell in the project root:
-        .\venv\Scripts\python.exe
+        - Windows:
+            .\venv\Scripts\python.exe
+        - MacOS or Unix:
+            venv/bin/python
     - Inside the Python shell, to run Classification experiments:
         - Import the desired method, run:
             from src.performance_evaluation_and_comparison import evaluate_and_compare_classification
