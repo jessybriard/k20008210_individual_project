@@ -1,4 +1,4 @@
-"""Tests for methods in file balance_data.py."""
+"""Tests for methods in file helper_methods.py."""
 
 import math
 from unittest import TestCase
@@ -10,7 +10,7 @@ from src.tools.helper_methods import consecutive_timestamps, extract_changes_fro
 
 
 class TestHelperMethods(TestCase):
-    """Test class for methods in file balance_data.py."""
+    """Test class for methods in file helper_methods.py."""
 
     # Tests for method extract_changes_from_dataframe()
 
